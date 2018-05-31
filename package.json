@@ -9,9 +9,12 @@
     "start": "npm run dev",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "test": "npm run unit",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "server": "json-server server/db.json  -p 3002 --watch --routes server/routes.json"
   },
   "dependencies": {
+    "axios": "^0.18.0",
+    "dexie": "^2.0.4",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
   },

@@ -4,7 +4,20 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 
+import axios from 'axios'
+import Dexie from 'dexie'
+
+Vue.prototype.$axios = axios
+
 Vue.config.productionTip = false
+
+/* database setup */
+var db = new Dexie('power-inspection')
+db.version(1).stores({
+  tasks: '++id,device'
+})
+
+Vue.prototype.$db = db
 
 /* eslint-disable no-new */
 new Vue({
