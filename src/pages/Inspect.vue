@@ -7,7 +7,7 @@
     <button @click="scanDevices">搜索附近设备</button>
     <div>
       <select v-model="selectedDeviceId" @change="deviceChanged()">
-        <option value="" selected>请选择设备</option>
+        <option value="">请选择设备</option>
         <option v-for="d in devices" :value="d.id" :data-distance="d.distance" :disabled="d.distance>500">
           {{d.name}} - {{d.distance}}m</option>
       </select>
@@ -23,7 +23,7 @@ export default {
     return {
       longitude: null,
       latitude: null,
-      selectedDeviceId: null,
+      selectedDeviceId: '',
       // 附近的设备
       devices: []
     }
