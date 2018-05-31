@@ -3,10 +3,12 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import utils from './utils'
 
 import axios from 'axios'
 import Dexie from 'dexie'
 
+Vue.prototype.$utils = utils
 Vue.prototype.$axios = axios
 
 Vue.config.productionTip = false

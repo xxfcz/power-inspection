@@ -1,10 +1,10 @@
 <template>
   <div>
     <h1>任务清单</h1>
-    <button @click="download">下载</button>
+    <button @click="download">重新下载</button>
     <ul>
       <div v-for="task in tasks">
-        {{task.id}}. {{task.device}}
+        {{task.id}}. {{task.device}} @({{task.longitude}},{{task.latitude}})
         <span v-if="task.finished">已检</span>
       </div>
     </ul>
@@ -26,7 +26,7 @@ export default {
   methods: {
     download() {
       this.$axios
-        .get('http://localhost:3002/api/tasks')
+        .get('/api/tasks')
         .then(resp => {
           var tasks = resp.data
           this.$db.tasks.bulkPut(tasks)
