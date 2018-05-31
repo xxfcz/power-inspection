@@ -1,2 +1,2 @@
-# inspection-demo
-巡检系统-演示版
+# power-inspection
+电力巡检系统
