@@ -18,6 +18,9 @@ var db = new Dexie('power-inspection')
 db.version(1).stores({
   tasks: '++id,device'
 })
+db.version(2).stores({
+  inspects:'++id,device'
+})
 
 Vue.prototype.$db = db
 

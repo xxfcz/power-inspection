@@ -34,6 +34,9 @@ function getGreatCircleDistance(lat1, lng1, lat2, lng2) {
   return s
 }
 
+/* File处理 */
+
+
 export default {
   getDistance: getGreatCircleDistance
 }
