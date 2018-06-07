@@ -7,7 +7,9 @@ import utils from './utils'
 
 import axios from 'axios'
 import Dexie from 'dexie'
+import VueMomentLib from 'vue-moment-lib'
 
+Vue.use(VueMomentLib)
 Vue.prototype.$utils = utils
 Vue.prototype.$axios = axios
 
@@ -19,9 +21,11 @@ db.version(1).stores({
   tasks: '++id,device'
 })
 db.version(2).stores({
-  inspects:'++id,device'
+  inspects: '++id,device'
 })
-
+db.version(3).stores({
+  config: 'name'
+})
 Vue.prototype.$db = db
 
 /* eslint-disable no-new */

@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>任务清单</h1>
-    <button @click="download">重新下载</button>
+    <button @click="download">重新下载</button><span>最后更新时间：{{lastUpdateTime | moment().format('MM-DD HH:mm')}}</span>
     <ul>
       <div v-for="task in tasks">
         {{task.id}}. {{task.device}} @({{task.longitude}},{{task.latitude}})
@@ -15,13 +15,21 @@
 export default {
   data() {
     return {
-      tasks: []
+      tasks: [],
+      lastUpdateTime: new Date()
     }
   },
   created() {
-    this.$db.tasks.toArray(a =>{
-      this.tasks = a
-    })
+    if (navigator.onLine) {
+      this.download()
+    } else {
+      this.$db.tasks.toArray(a => {
+        this.tasks = a
+      })
+      this.$db.config.get('tasks.lastUpdateTime').then(r => {
+        this.lastUpdateTime = r
+      })
+    }
   },
   methods: {
     download() {
@@ -29,8 +37,10 @@ export default {
         .get('/api/tasks')
         .then(resp => {
           var tasks = resp.data
-          this.$db.tasks.bulkPut(tasks)
           this.tasks = tasks
+          this.lastUpdateTime = new Date()
+          this.$db.tasks.bulkPut(tasks)
+          this.$db.config.put({name: 'tasks.lastUpdateTime', value: this.lastUpdateTime})
         })
         .catch(function(response) {
           console.error(response)
