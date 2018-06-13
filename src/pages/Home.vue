@@ -11,7 +11,7 @@
         <router-link to="local-records">本地巡检记录</router-link>
       </li>
       <li>
-        <router-link to="remote-records">远端巡检记录</router-link>
+        <router-link to="remote-records">服务器上的巡检记录</router-link>
       </li>
     </ul>
   </div>

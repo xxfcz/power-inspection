@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>本地存储的巡检记录</h1>
-    <button @click="upload">上传</button>
+    <button @click="upload" :disabled="records.length==0">上传</button>
     <div v-for="r in records" style="padding-top: 16px; border-top: blue solid 1px">
       <img :src="r.imageData" style="float:right;max-width:25%;max-height:150px">
       <dl>
@@ -11,6 +11,10 @@
       <dl>
         <dt>巡检时间：</dt>
         <dd>{{r.createTime | moment().format('YYYY-MM-DD HH:mm')}}</dd>
+      </dl>
+      <dl>
+        <dt>拍照时间：</dt>
+        <dd>{{r.imageTime | moment().format('YYYY-MM-DD HH:mm')}}</dd>
       </dl>
       <dl>
         <dt>巡检位置：</dt>
@@ -44,8 +48,17 @@ export default {
     })
   },
   methods: {
-    upload (){
-      
+    upload() {
+      this.$axios
+        .post('/api/inspects', this.records)
+        .then(r => {
+          this.$db.inspects.clear()
+          this.records = []
+          alert('上传成功！')
+        })
+        .catch(error => {
+          alert('上传时出错：' + error)
+        })
     }
   }
 }
