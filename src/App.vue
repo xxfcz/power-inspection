@@ -1,12 +1,18 @@
 <template>
-  <div id="app">
+  <div id="app" style="margin-top: 8px">
+    <div>程序地址：{{url}}</div>
     <router-view/>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  computed: {
+    url (){
+      return document.location.href
+    }
+  }
 }
 </script>
 
