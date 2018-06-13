@@ -68,6 +68,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         ? 'index.html'
         : config.build.index,
       template: 'index.html',
+      favicon: 'favicon.jpg',
       inject: true,
       minify: {
         removeComments: true,
@@ -124,7 +125,7 @@ const webpackConfig = merge(baseWebpackConfig, {
 
     new AppCachePlugin({
       cache: [], // some other assets
-      network: ['*'],
+      network: null,
       fallback: ['/ /'],
       settings: ['prefer-online'],
       exclude: [/.*\.map$/],
