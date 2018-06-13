@@ -17,6 +17,13 @@
   </div>
 </template>
 
+<style>
+  li {
+    margin: 8px 0 8px
+  }
+</style>
+
+
 <script>
 export default {
 }
