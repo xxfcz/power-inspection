@@ -49,8 +49,11 @@ export default {
   },
   methods: {
     upload() {
+      let posts = this.records.map(e => {
+        return this.$axios.post('/api/inspects', e)
+      })
       this.$axios
-        .post('/api/inspects', this.records)
+        .all(posts)
         .then(r => {
           this.$db.inspects.clear()
           this.records = []
