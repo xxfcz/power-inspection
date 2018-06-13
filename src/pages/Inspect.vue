@@ -2,12 +2,12 @@
   <div>
     <h1>巡检</h1>
     <div>当前坐标：{{longitude}},{{latitude}}
-      <button @click="relocate">刷新</button>
+      <button @click="refresh(false)">刷新坐标</button>
     </div>
     <div class="section">
-      <button @click="scanDevices">搜索附近设备</button>
+      <button @click="scanDevices">刷新附近设备</button>
       <select v-model="selectedDeviceId" @change="deviceChanged()">
-        <option value="">请选择设备</option>
+        <option value="" disabled> -- 请选择设备 -- </option>
         <option v-for="d in devices" :value="d.id" :data-distance="d.distance" :disabled="d.distance>500">
           {{d.name}} - {{d.distance}}m</option>
       </select>
@@ -67,19 +67,27 @@ export default {
       picked: 'One'
     }
   },
-  created() {
-    this.relocate()
+  mounted() {
+    this.refresh(true)
   },
   methods: {
     relocate() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          this.longitude = pos.coords.longitude
-          this.latitude = pos.coords.latitude
-        })
-      } else {
-        alert('您的浏览器不支持地理定位！')
-      }
+      return new Promise((resolve, reject) => {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            pos => {
+              this.longitude = pos.coords.longitude
+              this.latitude = pos.coords.latitude
+              resolve(`取到坐标为：${this.longitude}, ${this.latitude}`)
+            },
+            err => {
+              reject(`${err.code}: ${err.message}`)
+            }
+          )
+        } else {
+          reject('您的浏览器不支持地理定位！')
+        }
+      })
     },
     scanDevices() {
       this.devices = []
@@ -99,6 +107,16 @@ export default {
           })
         })
       })
+    },
+    refresh(silent=true) {
+      this.relocate(true)
+        .then(r => {
+          silent || alert(r)
+          this.scanDevices()
+        })
+        .catch(s => {
+          alert(s)
+        })
     },
     deviceChanged() {
       console.log(this.selectedDeviceId)
