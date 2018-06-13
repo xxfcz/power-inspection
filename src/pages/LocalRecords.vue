@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>本地存储的巡检记录</h1>
+    <h1>本地暂存的巡检记录</h1>
     <button @click="upload" :disabled="records.length==0">上传</button>
     <div v-for="r in records" style="padding-top: 16px; border-top: blue solid 1px">
       <img :src="r.imageData" style="float:right;max-width:25%;max-height:150px">
@@ -44,6 +44,9 @@ export default {
   },
   created() {
     this.$db.inspects.toArray(array => {
+      array.sort((a, b) => {
+        return b.createTime - a.createTime
+      })
       this.records = array
     })
   },

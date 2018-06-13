@@ -45,16 +45,22 @@ export default {
     this.loadInspects()
   },
   methods: {
-    loadInspects (){
-      this.$axios.get('/api/inspects').then(r => {
-        this.records = r.data
-        this.records.forEach(e => {
-          e.createTime = new Date(e.createTime)
-          e.imageTime = new Date(e.imageTime)
+    loadInspects() {
+      this.$axios
+        .get('/api/inspects')
+        .then(r => {
+          this.records = r.data
+          this.records.forEach(e => {
+            e.createTime = new Date(e.createTime)
+            e.imageTime = new Date(e.imageTime)
+          })
+          this.records.sort((a, b) => {
+            return b.createTime - a.createTime
+          })
         })
-      }).catch(error => {
-        alert('加载数据时出错：' + error)
-      })
+        .catch(error => {
+          alert('加载数据时出错：' + error)
+        })
     }
   }
 }
