@@ -42,6 +42,11 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     quiet: true, // necessary for FriendlyErrorsPlugin
     watchOptions: {
       poll: config.dev.poll,
+    },
+    before (app){
+      app.get('/appcache.manifest', function(req, res){
+        res.send('CACHE MANIFEST\nNETWORK:\n*')  // Fake appcache.manifest
+      })
     }
   },
   plugins: [
