@@ -127,7 +127,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       network: ['*'],
       fallback: ['/ /'],
       settings: ['prefer-online'],
-      exclude: [],  // e.g. ['file.txt', /.*\.js$/]
+      exclude: [/.*\.map$/],
       output: 'appcache.manifest'
     })
   ]
