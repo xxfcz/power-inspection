@@ -14,7 +14,7 @@
     </div>
     <div class="section">
       <label>选择照片：
-        <input type="file" @change="fileChanged">
+        <input type="file" accept="image/*" @change="fileChanged">
       </label>
       <img :src="image" style="width: 60%">
       <div>拍摄于 {{imageTime}}</div>
