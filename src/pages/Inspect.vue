@@ -8,8 +8,8 @@
       <button @click="scanDevices">刷新附近设备</button>
       <select v-model="selectedDeviceId" @change="deviceChanged()">
         <option value="" disabled> -- 请选择设备 -- </option>
-        <option v-for="d in devices" :value="d.id" :data-distance="d.distance" :disabled="d.distance>500">
-          {{d.name}} - {{d.distance}}m</option>
+        <option v-for="d in devices" :value="d.id" :data-distance="d.distance" :disabled="d.disabled">
+          {{d.name}} - {{d.distance}}m {{d.disabled?'（不可选）':''}}</option>
       </select>
     </div>
     <div class="section">
@@ -43,11 +43,16 @@
   padding-top: 6px;
   border-top: solid blue 1px;
 }
+option:disabled {
+  color: red;
+}
 </style>
 
 
 <script>
 import utils from '@/utils'
+
+const DIST_LIMIT = 500 // 不显示距离超过500米的设备
 
 export default {
   data() {
@@ -63,8 +68,6 @@ export default {
       // 设备状态
       deviceName: '',
       deviceStatus: 'normal',
-
-      picked: 'One'
     }
   },
   mounted() {
@@ -93,17 +96,23 @@ export default {
       this.devices = []
       this.$db.tasks.toArray(tasks => {
         tasks.forEach(t => {
+          // 计算每个设备到当前位置的距离
           let d = this.$utils.calcDistance(
             t.latitude,
             t.longitude,
             this.latitude,
             this.longitude
           )
-          console.log(d)
+          // 添加到显示用的设备列表
           this.devices.push({
             id: t.id,
             name: t.device,
-            distance: parseInt(d)
+            distance: parseInt(d),
+            disabled: parseInt(d) > DIST_LIMIT
+          })
+          // 按距离升序排列
+          this.devices.sort((a, b) => {
+            return a.distance - b.distance
           })
         })
       })
@@ -119,14 +128,12 @@ export default {
         })
     },
     deviceChanged() {
-      console.log(this.selectedDeviceId)
       let theDevice = this.devices.find(e => {
         return e.id == this.selectedDeviceId
       })
       this.deviceName = theDevice.name
     },
     fileChanged(e) {
-      console.log(e)
       var files = e.target.files || e.dataTransfer.files
       if (!files.length) return
       this.createImage(files[0])
