@@ -30,12 +30,17 @@ export default {
     if (navigator.onLine) {
       this.download()
     } else {
-      this.$db.tasks.toArray(a => {
-        this.tasks = a
-      })
-      this.$db.config.get('tasks.lastUpdateTime').then(r => {
-        this.lastUpdateTime = new Date(r.value)
-      })
+      this.$db.tasks
+        .toArray(a => {
+          this.tasks = a
+          return this.$db.config.get('tasks.lastUpdateTime')
+        })
+        .then(r => {
+          this.lastUpdateTime = new Date(r.value)
+        })
+        .catch(e => {
+          alert(e)
+        })
     }
   },
   methods: {
@@ -50,11 +55,17 @@ export default {
           var tasks = resp.data
           this.tasks = tasks
           this.lastUpdateTime = new Date()
-          this.$db.tasks.bulkPut(tasks)
-          this.$db.config.put({
-            name: 'tasks.lastUpdateTime',
-            value: this.lastUpdateTime
-          })
+          this.$db.tasks
+            .bulkPut(tasks)
+            .then(r => {
+              return this.$db.config.put({
+                name: 'tasks.lastUpdateTime',
+                value: this.lastUpdateTime
+              })
+            })
+            .catch(e => {
+              alert('保存失败！原因是：' + e)
+            })
         })
         .catch(function(response) {
           console.error(response)
