@@ -8,7 +8,8 @@ function resolve (dir) {
   return path.join(__dirname, '..', dir)
 }
 
-
+const MODE_DEV_SERVER = process.argv[1].indexOf('webpack-dev-server') > -1 ? true : false;
+const APPCACHE = process.env.APPCACHE ? JSON.parse(process.env.APPCACHE) : !MODE_DEV_SERVER;
 
 module.exports = {
   context: path.resolve(__dirname, '../'),

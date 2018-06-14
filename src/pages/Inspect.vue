@@ -93,7 +93,7 @@ export default {
       this.devices = []
       this.$db.tasks.toArray(tasks => {
         tasks.forEach(t => {
-          let d = this.$utils.getDistance(
+          let d = this.$utils.calcDistance(
             t.latitude,
             t.longitude,
             this.latitude,
@@ -108,7 +108,7 @@ export default {
         })
       })
     },
-    refresh(silent=true) {
+    refresh(silent = true) {
       this.relocate(true)
         .then(r => {
           silent || alert(r)
@@ -154,6 +154,7 @@ export default {
         })
         .then(e => {
           alert('保存成功！')
+          this.$router.go(-1)
         })
         .catch(e => {
           alert('保存失败！' + e)

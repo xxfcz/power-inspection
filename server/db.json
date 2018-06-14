@@ -33,7 +33,20 @@
       "device": "HH #1",
       "longitude": 112.6339035,
       "latitude": 26.8922348
-    }  ],
+    },
+    {
+      "device": "自装设备A",
+      "longitude": 111.899639,
+      "latitude": 27.184422,
+      "id": 5
+    },
+    {
+      "device": "自装设备B",
+      "longitude": "111.899",
+      "latitude": "27.184",
+      "id": 6
+    }
+  ],
   "inspects": [
     {
       "device": "箱变22#",

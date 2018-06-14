@@ -5,6 +5,7 @@ import Inspect from '@/pages/Inspect'
 import LocalRecords from '@/pages/LocalRecords'
 import RemoteRecords from '@/pages/RemoteRecords'
 import Tasks from '@/pages/Tasks'
+import AddTask from '@/pages/AddTask'
 
 Vue.use(Router)
 
@@ -34,6 +35,10 @@ export default new Router({
       path: '/remote-records',
       name: 'remote-records',
       component: RemoteRecords
+    },{
+      path: '/add-task',
+      name: 'add-task',
+      component: AddTask
     }
   ]
 })

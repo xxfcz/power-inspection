@@ -13,7 +13,7 @@ function getRad(d) {
  * @param {Object} lng2
  */
 
-function getGreatCircleDistance(lat1, lng1, lat2, lng2) {
+function calcGreatCircleDistance(lat1, lng1, lat2, lng2) {
   var radLat1 = getRad(lat1)
   var radLat2 = getRad(lat2)
 
@@ -37,6 +37,34 @@ function getGreatCircleDistance(lat1, lng1, lat2, lng2) {
 /* File处理 */
 
 
+function getCurrentPosition(){
+  return new Promise((resolve, reject) => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          resolve({
+            longitude: pos.coords.longitude,
+            latitude: pos.coords.latitude
+          })
+        },
+        err => {
+          reject(err.message)
+        }
+      )
+    } else {
+      reject('您的浏览器不支持地理定位！')
+    }
+  })
+}
+
 export default {
-  getDistance: getGreatCircleDistance
+  /**
+ * caculate the distance
+ * @param {Object} lat1
+ * @param {Object} lng1
+ * @param {Object} lat2
+ * @param {Object} lng2
+ */
+  calcDistance: calcGreatCircleDistance,
+  getCurrentPosition: getCurrentPosition
 }

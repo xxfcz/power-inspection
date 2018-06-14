@@ -13,6 +13,9 @@
       <li>
         <router-link to="remote-records">服务器上的巡检记录</router-link>
       </li>
+      <li>
+        <router-link to="add-task">添加任务</router-link>
+      </li>
     </ul>
   </div>
 </template>
