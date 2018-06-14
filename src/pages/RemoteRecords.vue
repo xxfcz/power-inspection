@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>服务器上的巡检记录</h1>
+    <div v-if="!onLine">您已离线，无法查看</div>
     <div v-for="r in records" style="padding-top: 16px; border-top: blue solid 1px">
       <img :src="r.imageData" style="float:right;max-width:25%;max-height:150px">
       <dl>
@@ -41,11 +42,20 @@ export default {
       records: []
     }
   },
+  computed: {
+    onLine() {
+      return navigator.onLine
+    }
+  },
   created() {
-    this.loadInspects()
+    if (navigator.onLine) this.loadInspects()
   },
   methods: {
     loadInspects() {
+      if (!navigator.onLine) {
+        alert('您已离线，无法查看服务器上的巡检记录')
+        return
+      }
       this.$axios
         .get('/api/inspects')
         .then(r => {

@@ -1,6 +1,7 @@
 <template>
   <div>
     <h1>添加任务/设备</h1>
+    <div v-if="!onLine" style="color:red">您已离线，无法添加</div>
     <div>
       <label>设备名称：
         <input name="name" v-model="device.name">
@@ -15,9 +16,9 @@
         <input name="latitude" v-model="device.latitude" @change="calcDistance">
       </label>
     </div>
-    <div>与当前位置相距：{{distance}}米</div>
+    <div class="distance">与当前位置相距：{{distance}}米</div>
     <div>
-      <button class="upload" @click="upload">上传</button>
+      <button class="submit" @click="submit" :disabled="!onLine">提交</button>
     </div>
   </div>
 </template>
@@ -29,19 +30,34 @@ button.useCurPos {
   width: 5em;
   margin: 0;
 }
-button.upload {
+button.submit {
   display: block;
   margin: 8px auto 8px;
 }
+label {
+  position: relative;
+  display: inline-block;
+  margin: 6px 0 0 6px;
+}
+label input {
+  position: absolute;
+  left: 6em;
+  top: 0em;
+}
+.distance {
+  margin-top: 4px;
+  margin-left: 36px;
+  font-size: smaller;
+  text-align: center;
+}
 </style>
-
 
 <script>
 export default {
   data() {
     return {
       device: {
-        name: '自装设备A',
+        name: null,
         longitude: null,
         latitude: null
       },
@@ -52,15 +68,11 @@ export default {
       distance: 0
     }
   },
-  // computed: {
-  //   distance() {
-  //     if (!this.device.longitude || !this.device.latitude) return null
-  //     return this.$utils.calcDistance(
-  //       this.device.latitude,
-  //       this.device.longitude
-  //     )
-  //   }
-  // },
+  computed: {
+    onLine() {
+      return navigator.onLine
+    }
+  },
   methods: {
     useCurrentPosition() {
       this.$utils
@@ -77,14 +89,24 @@ export default {
         })
     },
     calcDistance() {
-      this.distance = this.$utils.calcDistance(
-        this.device.latitude,
-        this.device.longitude,
-        this.curPos.latitude,
-        this.curPos.longitude
-      )
+      if (isNaN(this.device.longitude) || isNaN(this.device.latitude)) {
+        return
+      }
+      let lat1 = parseFloat(this.device.latitude)
+      let lng1 = parseFloat(this.device.longitude)
+      let lat2 = parseFloat(this.curPos.latitude)
+      let lng2 = parseFloat(this.curPos.longitude)
+      this.distance = this.$utils.calcDistance(lat1, lng1, lat2, lng2)
     },
-    upload() {
+    submit() {
+      if (
+        !this.device.name ||
+        !this.device.longitude ||
+        !this.device.latitude
+      ) {
+        alert('请填写完整再提交')
+        return
+      }
       this.$axios
         .post('/api/tasks', {
           device: this.device.name,
@@ -93,6 +115,7 @@ export default {
         })
         .then(r => {
           alert('上传成功!')
+          this.$router.go(-1)
         })
         .catch(error => {
           alert(error)

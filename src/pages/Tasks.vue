@@ -1,7 +1,8 @@
 <template>
   <div>
     <h1>任务清单</h1>
-    <button @click="download">重新下载</button>
+    <div v-if="!onLine">您已离线，无法下载</div>
+    <button @click="download" :disabled="!onLine">重新下载</button>
     <span>最后更新时间：{{lastUpdateTime | moment().format('MM-DD HH:mm')}}</span>
     <ul>
       <div v-for="task in tasks">
@@ -20,6 +21,11 @@ export default {
       lastUpdateTime: new Date()
     }
   },
+  computed: {
+    onLine() {
+      return navigator.onLine
+    }
+  },
   mounted() {
     if (navigator.onLine) {
       this.download()
@@ -34,6 +40,10 @@ export default {
   },
   methods: {
     download() {
+      if (!navigator.onLine) {
+        alert('您已离线，无法下载')
+        return
+      }
       this.$axios
         .get('/api/tasks')
         .then(resp => {
