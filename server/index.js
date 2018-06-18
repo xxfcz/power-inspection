@@ -1,22 +1,21 @@
-const jsonServer = require('json-server')
+const express = require('express')
+let app = express()
 const path = require('path')
-const server = jsonServer.create()
-const router = jsonServer.router(path.join(__dirname, 'db.json'))
-const middlewares = jsonServer.defaults()
+const jsonServer = require('json-server')
 
-server.get('/echo', (req, res) => {
+
+const router = jsonServer.router(path.join(__dirname, 'db.json'))
+app.use('/api', router)
+
+app.use(express.static(path.join(__dirname, '../dist')))
+
+// const middlewares = jsonServer.defaults()
+// app.use(middlewares)
+
+app.get('/echo', (req, res) => {
   res.send('hello!')
 }) 
 
-server.use(middlewares)
-
-// server.use(jsonServer.rewriter({
-//   '/api/*': '/$1'
-// }))
-
-server.use('/api', router)
-
-
-server.listen(3002, () => {
-  console.log('JSON Server is running on 3002...')
+app.listen(3002, () => {
+  console.log('Express Server is running on 3002...')
 })
