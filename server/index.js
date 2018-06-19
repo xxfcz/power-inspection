@@ -1,27 +1,21 @@
-//const express = require('express')
-//let app = express()
+const express = require('express')
+let app = express()
 const path = require('path')
 const jsonServer = require('json-server')
-const app = jsonServer.create()
+const bodyParser = require('body-parser')
+const formidable = require('formidable')
+const _ = require('lodash')
+
+//const app = jsonServer.create()
+app.use(express.static(path.join(__dirname, '../dist')))
 
 const router = jsonServer.router(path.join(__dirname, 'db.json'))
 app.use('/api', router)
 
-//app.use(express.static(path.join(__dirname, '../dist')))
-
-const middlewares = jsonServer.defaults({
-  static: path.join(__dirname, '../dist')
-})
-app.use(middlewares)
-
-app.use(jsonServer.bodyParser)
-app.use((req, res, next) => {
-  if (req.method === 'POST') {
-    req.body.createdAt = Date.now()
-  }
-  // Continue to JSON Server router
-  next()
-})
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+// parse application/json
+app.use(bodyParser.json())
 
 app.get('/echo', (req, res) => {
   res.send('hello!')
@@ -29,9 +23,21 @@ app.get('/echo', (req, res) => {
 
 // 文件上传
 app.post('/upload', (req, res) => {
+  var form = new formidable.IncomingForm()
+  form.uploadDir = path.join(__dirname, '../dist/upload')
+  form.keepExtensions = true
+  form.maxFileSize = 5 * 1024 * 1024
+
+  form.parse(req, function(err, fields, files) {
+    res.send(
+      _.map(files, e => {
+        return { path: e.path.replace(form.uploadDir, 'http://192.168.0.103:3002/upload'), name: e.name }
+      })
+    )
+  })
   // var filename = req.files.upload.path //文件存放绝对路径
   // var title = req.files.upload.name //上传后解析过的文件名
-  res.send('ok')
+  //res.send('ok')
 })
 
 app.listen(3002, () => {
