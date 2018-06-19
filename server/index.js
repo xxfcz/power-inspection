@@ -14,9 +14,25 @@ const middlewares = jsonServer.defaults({
 })
 app.use(middlewares)
 
+app.use(jsonServer.bodyParser)
+app.use((req, res, next) => {
+  if (req.method === 'POST') {
+    req.body.createdAt = Date.now()
+  }
+  // Continue to JSON Server router
+  next()
+})
+
 app.get('/echo', (req, res) => {
   res.send('hello!')
-}) 
+})
+
+// 文件上传
+app.post('/upload', (req, res) => {
+  // var filename = req.files.upload.path //文件存放绝对路径
+  // var title = req.files.upload.name //上传后解析过的文件名
+  res.send('ok')
+})
 
 app.listen(3002, () => {
   console.log('Express Server is running on 3002...')
