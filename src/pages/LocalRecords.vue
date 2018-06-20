@@ -49,14 +49,17 @@ export default {
     }
   },
   created() {
-    this.$db.inspects.toArray(array => {
-      array.sort((a, b) => {
-        return b.createTime - a.createTime
-      })
-      this.records = array
-    })
+    this.reloadInspects()
   },
   methods: {
+    reloadInspects() {
+      this.$db.inspects.toArray(array => {
+        array.sort((a, b) => {
+          return b.createTime - a.createTime
+        })
+        this.records = array
+      })
+    },
     upload() {
       // 上传巡检记录(包括照片)
       let results = []
@@ -65,10 +68,8 @@ export default {
           .post('/api/inspects', e)
           .then(r => {
             this.$db.inspects.delete(e.device).then(r2 => {
-              _.remove(this.records, e2 => {
-                return e2.device == e.device
-              })
-              let msg = `上传成功：${e.name}`
+              this.reloadInspects()
+              let msg = `上传成功：${e.device}`
               console.info(msg)
               alert(msg)
             })
