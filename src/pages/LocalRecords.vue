@@ -3,7 +3,6 @@
     <h1>本地暂存的巡检记录</h1>
     <button @click="upload" :disabled="records.length==0">上传</button>
     <div v-for="r in records" style="padding-top: 16px; border-top: blue solid 1px">
-      <img :src="r.imageData" style="float:right;max-width:25%;max-height:150px">
       <dl>
         <dt>设备：</dt>
         <dd>{{r.device}}</dd>
@@ -13,10 +12,6 @@
         <dd>{{r.createTime | moment().format('YYYY-MM-DD HH:mm')}}</dd>
       </dl>
       <dl>
-        <dt>拍照时间：</dt>
-        <dd>{{r.imageTime | moment().format('YYYY-MM-DD HH:mm')}}</dd>
-      </dl>
-      <dl>
         <dt>巡检位置：</dt>
         <dd>{{r.longitude}}，{{r.latitude}}</dd>
       </dl>
@@ -24,6 +19,12 @@
         <dt>设备状态：</dt>
         <dd>{{r.deviceStatus}}</dd>
       </dl>
+      <div>
+        <div v-for="i in r.images">
+          <img :src="i.data">
+          <div style="text-align:right">{{ new Date(i.lastModified) | moment().format('YYYY-MM-DD HH:mm') }}</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -52,6 +53,7 @@ export default {
   },
   methods: {
     upload() {
+      // 上传巡检记录(包括照片)
       let posts = this.records.map(e => {
         return this.$axios.post('/api/inspects', e)
       })

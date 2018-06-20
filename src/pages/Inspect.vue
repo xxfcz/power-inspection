@@ -18,7 +18,7 @@
       </label>
       <div v-for="i in images">
         <img :src="i.data" style="width: 60%">
-        <div style="text-align:right">拍摄于 {{i.time}}</div>
+        <div style="text-align:right">拍摄于 {{new Date(i.lastModified) | moment().format('YYYY-MM-DD hh:mm')}}</div>
       </div>
     </div>
     <div class="section">
@@ -140,10 +140,23 @@ export default {
       if (!files.length) return
       _.forEach(files, f => {
         this.createImage(f).then(data => {
+          /*
+            {
+              lastModified,
+              lastModifiedDate,
+              name,
+              size,
+              type
+            }
+          */
           this.images.push({
-            data: data,
-            time: f.lastModifiedDate
+            name: f.name,
+            size: f.size,
+            lastModified: f.lastModified,
+            type: f.type,
+            data: data  // Base64
           })
+          console.log(f);
         })
       })
     },
@@ -159,6 +172,7 @@ export default {
     },
     // 保存到本地
     save() {
+      console.log(this.images)
       this.$db.inspects
         .add({
           device: this.deviceName,

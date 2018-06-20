@@ -15,14 +15,14 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           //需要rewrite重写的, 如果在服务器端做了处理则可以不要这段
-          '^/api': ''
+          //'^/api': ''
         }
       }
     },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST
-    port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    port: 8082, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,

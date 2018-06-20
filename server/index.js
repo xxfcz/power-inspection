@@ -17,7 +17,6 @@ app.use('/upload', express.static(path.join(__dirname, './upload')))
 const router = jsonServer.router(path.join(__dirname, 'db.json'))
 app.use('/api', router)
 
-
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
