@@ -32,6 +32,7 @@ Vue.filter('datetime', x=>{
 Vue.filter('bytes', (n)=>{
   return bytes(n)
 })
+Vue.prototype.$bytes = bytes
 
 /* eslint-disable no-new */
 new Vue({

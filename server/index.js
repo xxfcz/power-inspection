@@ -6,21 +6,23 @@ const jsonServer = require('json-server')
 const bodyParser = require('body-parser')
 const formidable = require('formidable')
 const _ = require('lodash')
+const bytes = require('bytes')
 
 const xutils = require('./xutils')
+const config = require('../config')
+const MAX_BODY_SIZE = process.env.NODE_ENV === 'production' ? config.build.max_body_size : config.dev.max_body_size
 
 //const app = jsonServer.create()
 /* static files ----------------------------------------------------- */
 app.use(express.static(path.join(__dirname, '../dist')))
 app.use('/upload', express.static(path.join(__dirname, './upload')))
 
-const MAX_FILE_SIZE = '5mb'
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false, limit:  MAX_FILE_SIZE}))
+app.use(bodyParser.urlencoded({ extended: false, limit: MAX_BODY_SIZE}))
 // parse application/json
 app.use(
   bodyParser.json({
-    limit: MAX_FILE_SIZE
+    limit: config.max_body_size
   })
 )
 

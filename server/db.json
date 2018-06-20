@@ -113,93 +113,93 @@
   ],
   "inspects": [
     {
-      "device": "隔离开关3#",
-      "deviceStatus": "normal",
-      "images": [
-        {
-          "lastModified": "2018-06-13T01:07:27.290Z",
-          "name": "tree.jpg",
-          "url": "/upload/tree_1529499116018_760.jpg"
-        }
-      ],
-      "longitude": 111.899639,
-      "latitude": 27.184422,
-      "createTime": "2018-06-13T05:34:36.669Z",
-      "id": 1
-    },
-    {
       "device": "箱变22#",
       "deviceStatus": "normal",
       "images": [
         {
-          "name": "cloudy.png",
-          "size": 19146,
-          "lastModified": 1528852047290,
-          "type": "image/png",
-          "url": "/upload/cloudy_1529501471021_972.png"
-        },
-        {
-          "name": "rainy.png",
-          "size": 25627,
-          "lastModified": 1528852025789,
-          "type": "image/png",
-          "url": "/upload/rainy_1529501480858_401.png"
+          "name": "ricefield.jpg",
+          "size": 3282496,
+          "lastModified": 1529498291946,
+          "type": "image/jpeg",
+          "url": "/upload/ricefield_1529505901471_368.jpg"
         }
       ],
       "longitude": 111.899639,
       "latitude": 27.184422,
-      "createTime": "2018-06-20T13:31:00.557Z",
-      "id": 2
+      "createTime": "2018-06-20T14:44:48.326Z",
+      "percent": "开始上传",
+      "id": 1
     },
     {
       "device": "自装设备A",
       "deviceStatus": "normal",
       "images": [
         {
-          "name": "kelly_sweet.jpg",
-          "size": 24086,
-          "lastModified": 1528953029053,
+          "name": "1159701287.jpg",
+          "size": 2973313,
+          "lastModified": 1529489088113,
           "type": "image/jpeg",
-          "url": "/upload/kelly_sweet_1529502143892_388.jpg"
+          "url": "/upload/1159701287_1529505901587_660.jpg"
         }
       ],
       "longitude": 111.899639,
       "latitude": 27.184422,
-      "createTime": "2018-06-20T13:37:13.685Z",
-      "id": 3
-    },
-    {
-      "device": "箱变23#",
-      "deviceStatus": "normal",
-      "images": [
-        {
-          "name": "ricefield.jpg",
-          "size": 3282496,
-          "lastModified": 1529498291946,
-          "type": "image/jpeg",
-          "url": "/upload/ricefield_1529502141099_548.jpg"
-        }
-      ],
-      "longitude": 111.899639,
-      "latitude": 27.184422,
-      "createTime": "2018-06-20T13:37:31.854Z",
-      "id": 4
+      "createTime": "2018-06-20T14:43:58.846Z",
+      "percent": "开始上传",
+      "id": 2
     },
     {
       "device": "箱变22#",
       "deviceStatus": "normal",
       "images": [
         {
-          "name": "ricefield.jpg",
-          "size": 3282496,
-          "lastModified": 1529498291946,
+          "name": "erotic_lbiza_2014.jpg",
+          "size": 25636,
+          "lastModified": 1528945943811,
           "type": "image/jpeg",
-          "url": "/upload/ricefield_1529503012281_234.jpg"
+          "url": "/upload/erotic_lbiza_2014_1529506347377_215.jpg"
         }
       ],
       "longitude": 111.899639,
       "latitude": 27.184422,
-      "createTime": "2018-06-20T13:56:45.576Z",
+      "createTime": "2018-06-20T14:51:49.415Z",
+      "percent": "开始上传",
+      "id": 3
+    },
+    {
+      "device": "自装设备B",
+      "deviceStatus": "normal",
+      "images": [
+        {
+          "name": "sunday_in_bed.jpg",
+          "size": 70179,
+          "lastModified": 1528954691440,
+          "type": "image/jpeg",
+          "url": "/upload/sunday_in_bed_1529506556776_746.jpg"
+        }
+      ],
+      "longitude": 111.899639,
+      "latitude": 27.184422,
+      "createTime": "2018-06-20T14:55:48.555Z",
+      "percent": "开始上传",
+      "id": 4
+    },
+    {
+      "device": "自装设备A",
+      "deviceStatus": "normal",
+      "images": [
+        {
+          "name": "1159701287.jpg",
+          "size": 2973313,
+          "lastModified": 1529489088113,
+          "type": "image/jpeg",
+          "url": "/upload/1159701287_1529506556965_404.jpg"
+        }
+      ],
+      "longitude": 111.899639,
+      "latitude": 27.184422,
+      "createTime": "2018-06-20T14:51:24.748Z",
+      "percent": "开始上传",
       "id": 5
     },
     {
@@ -211,61 +211,21 @@
           "size": 2973313,
           "lastModified": 1529489088113,
           "type": "image/jpeg",
-          "url": "/upload/1159701287_1529503012416_558.jpg"
+          "url": "/upload/1159701287_1529506765797_382.jpg"
         },
         {
-          "name": "cloudy.png",
-          "size": 19146,
-          "lastModified": 1528852047290,
-          "type": "image/png",
-          "url": "/upload/cloudy_1529503012449_316.png"
+          "name": "ricefield.jpg",
+          "size": 3282496,
+          "lastModified": 1529498291946,
+          "type": "image/jpeg",
+          "url": "/upload/ricefield_1529506765847_993.jpg"
         }
       ],
       "longitude": 111.899639,
       "latitude": 27.184422,
-      "createTime": "2018-06-20T13:56:22.883Z",
+      "createTime": "2018-06-20T14:59:21.204Z",
+      "percent": "开始上传",
       "id": 6
-    },
-    {
-      "device": "箱变22#",
-      "deviceStatus": "normal",
-      "images": [
-        {
-          "name": "kelly_sweet.jpg",
-          "size": 24086,
-          "lastModified": 1528953029053,
-          "type": "image/jpeg",
-          "url": "/upload/kelly_sweet_1529503251935_911.jpg"
-        }
-      ],
-      "longitude": 111.899639,
-      "latitude": 27.184422,
-      "createTime": "2018-06-20T14:00:43.715Z",
-      "id": 7
-    },
-    {
-      "device": "自装设备A",
-      "deviceStatus": "normal",
-      "images": [
-        {
-          "name": "1159701287.jpg",
-          "size": 2973313,
-          "lastModified": 1529489088113,
-          "type": "image/jpeg",
-          "url": "/upload/1159701287_1529503252200_757.jpg"
-        },
-        {
-          "name": "cloudy.png",
-          "size": 19146,
-          "lastModified": 1528852047290,
-          "type": "image/png",
-          "url": "/upload/cloudy_1529503252268_103.png"
-        }
-      ],
-      "longitude": 111.899639,
-      "latitude": 27.184422,
-      "createTime": "2018-06-20T14:00:30.027Z",
-      "id": 8
     }
   ]
 }

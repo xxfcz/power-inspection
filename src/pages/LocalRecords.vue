@@ -1,8 +1,10 @@
 <template>
   <div>
     <h1>本地暂存的巡检记录</h1>
-    <button @click="upload" :disabled="records.length==0">上传</button>
-    <div v-for="r in records" style="padding-top: 16px; border-top: blue solid 1px">
+    <button @click="upload" :disabled="uploadDisabled">上传</button>
+    <div v-for="r in records" style="padding-top: 8px; border-top: blue solid 1px">
+      <div v-if="r.percent">{{r.percent}}</div>
+      <div style="color:red" v-if="r.error">{{r.error}}</div>
       <dl>
         <dt>设备：</dt>
         <dd>{{r.device}}</dd>
@@ -41,15 +43,24 @@ dt {
 
 <script>
 import _ from 'lodash'
+import config from '../../config'
+
+const MAX_BODY_SIZE = process.env.NODE_ENV === 'production' ? config.build.max_body_size : config.dev.max_body_size
 
 export default {
   data() {
     return {
+      isUploading: false,
       records: []
     }
   },
   created() {
     this.reloadInspects()
+  },
+  computed: {
+    uploadDisabled() {
+      return this.records.length == 0 || this.isUploading
+    }
   },
   methods: {
     reloadInspects() {
@@ -57,25 +68,47 @@ export default {
         array.sort((a, b) => {
           return b.createTime - a.createTime
         })
+        array.forEach(e => {
+          e.percent = 0
+        })
         this.records = array
       })
     },
     upload() {
       // 上传巡检记录(包括照片)
+      this.isUploading = true
+      let count = this.records.length
       let results = []
-      this.records.forEach((e, i) => {
+      this.records.forEach((rec, i) => {
+        // 检查数据大小
+        let size = JSON.stringify(this.records[0]).length
+        if (size > MAX_BODY_SIZE) {
+          rec.error = `记录过大，无法上传：${this.$bytes(size)}>${this.$bytes(MAX_BODY_SIZE)}`
+          return
+        }
+        rec.percent = '开始上传'
         this.$axios
-          .post('/api/inspects', e)
-          .then(r => {
-            this.$db.inspects.delete(e.device).then(r2 => {
+          .post('/api/inspects', rec, {
+            onUploadProgress: progress => {
+              let p = parseInt(progress.loaded / progress.total * 100)
+              if (p) rec.percent = p + ' %'
+            }
+          })
+          .then(() => {
+            this.$db.inspects.delete(rec.device).then(() => {
               this.reloadInspects()
-              let msg = `上传成功：${e.device}`
+              let msg = `上传成功：${rec.device}`
               console.info(msg)
-              alert(msg)
+              //alert(msg)
             })
           })
           .catch(error => {
-            alert(`上传${e.name}时出错：${error}`)
+            rec.error = `上传时出错：${error}`
+          })
+          .finally(() => {
+            count--
+            console.log('count=', count)
+            if (!count) this.isUploading = false
           })
       })
     }
