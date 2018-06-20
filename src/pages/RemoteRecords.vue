@@ -13,11 +13,6 @@
         <dd>{{ r.createTime | moment().format('YYYY-MM-DD HH:mm') }}</dd>
       </dl>
       <dl>
-        <dt>拍照时间：</dt>
-        <dd>{{ r.imageTime | moment().format('YYYY-MM-DD HH:mm')}}</dd>
-        <!--   -->
-      </dl>
-      <dl>
         <dt>巡检位置：</dt>
         <dd>{{ r.longitude }}，{{ r.latitude }}</dd>
       </dl>
@@ -25,6 +20,12 @@
         <dt>设备状态：</dt>
         <dd>{{r.deviceStatus}}</dd>
       </dl>
+      <div>
+        <div v-for="i in r.images">
+          <img :src="i.url" style="max-width:60%">
+          <div style="text-align:right">{{ new Date(i.lastModified) | moment().format('YYYY-MM-DD HH:mm') }}</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -62,7 +63,6 @@ export default {
           this.records = r.data
           this.records.forEach(e => {
             e.createTime = new Date(e.createTime)
-            e.imageTime = new Date(e.imageTime)
           })
           this.records.sort((a, b) => {
             return b.createTime - a.createTime

@@ -17,6 +17,10 @@ module.exports = {
           //需要rewrite重写的, 如果在服务器端做了处理则可以不要这段
           //'^/api': ''
         }
+      },
+      '/upload':{
+        target: 'http://localhost:3002',
+        changeOrigin: true
       }
     },
 

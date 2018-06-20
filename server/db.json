@@ -112,25 +112,5 @@
     }
   ],
   "inspects": [
-    {
-      "device": "箱变22#",
-      "deviceStatus": "normal",
-      "imageFile": "/upload/",
-      "imageTime": "2018-06-13T01:07:27.290Z",
-      "longitude": 111.899639,
-      "latitude": 27.184422,
-      "createTime": "2018-06-13T05:34:36.669Z",
-      "id": "PoyzPY5"
-    },
-    {
-      "device": "箱变22#",
-      "deviceStatus": "normal",
-      "imageFile": "/upload/",
-      "imageTime": "2018-06-13T01:07:27.290Z",
-      "longitude": 111.899639,
-      "latitude": 27.184422,
-      "createTime": "2018-06-13T05:48:18.502Z",
-      "id": "5~y6Xgm"
-    }
   ]
 }
