@@ -8,6 +8,7 @@ import utils from './utils'
 import axios from 'axios'
 import Dexie from 'dexie'
 import VueMomentLib from 'vue-moment-lib'
+import bytes from 'bytes'
 
 Vue.use(VueMomentLib)
 Vue.prototype.$utils = utils
@@ -23,6 +24,14 @@ db.version(1).stores({
   config: 'name'
 })
 Vue.prototype.$db = db
+
+Vue.filter('datetime', x=>{
+  return Vue.moment(x).format('YYYY-MM-DD hh:mm')
+})
+
+Vue.filter('bytes', (n)=>{
+  return bytes(n)
+})
 
 /* eslint-disable no-new */
 new Vue({

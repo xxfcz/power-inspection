@@ -14,10 +14,15 @@ const xutils = require('./xutils')
 app.use(express.static(path.join(__dirname, '../dist')))
 app.use('/upload', express.static(path.join(__dirname, './upload')))
 
+const MAX_FILE_SIZE = '5mb'
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false, limit:  MAX_FILE_SIZE}))
 // parse application/json
-app.use(bodyParser.json())
+app.use(
+  bodyParser.json({
+    limit: MAX_FILE_SIZE
+  })
+)
 
 // req.body 中只含一个 Inspect 对象
 const postInspect = (req, res, next) => {
@@ -64,7 +69,6 @@ const postInspect = (req, res, next) => {
 
 app.post('/api/inspects', (req, res, next) => {
   console.log('caught: POST /api/inspects')
-  //console.log(req.body)
   postInspect(req, res, next)
 })
 

@@ -16,9 +16,12 @@
       <label>选择照片：
         <input type="file" accept="image/*" multiple @change="fileChanged">
       </label>
-      <div v-for="i in images">
-        <img :src="i.data" style="width: 60%">
-        <div style="text-align:right">拍摄于 {{new Date(i.lastModified) | moment().format('YYYY-MM-DD hh:mm')}}</div>
+      <div v-for="i in images" style="text-align:center">
+        <img :src="i.data" style="max-width: 60%; max-height:160px">
+        <div style="position:relative">
+          <div style="float:left">{{ i.size | bytes() }}</div>
+          <div style="margin-left: 120px; text-align:right">拍摄于 {{new Date(i.lastModified) | moment().format('YYYY-MM-DD hh:mm')}}</div>
+        </div>
       </div>
     </div>
     <div class="section">
@@ -154,9 +157,9 @@ export default {
             size: f.size,
             lastModified: f.lastModified,
             type: f.type,
-            data: data  // Base64
+            data: data // Base64
           })
-          console.log(f);
+          console.log(f)
         })
       })
     },

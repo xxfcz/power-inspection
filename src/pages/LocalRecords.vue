@@ -9,7 +9,7 @@
       </dl>
       <dl>
         <dt>巡检时间：</dt>
-        <dd>{{r.createTime | moment().format('YYYY-MM-DD HH:mm')}}</dd>
+        <dd>{{r.createTime | datetime}}</dd>
       </dl>
       <dl>
         <dt>巡检位置：</dt>
@@ -20,9 +20,12 @@
         <dd>{{r.deviceStatus}}</dd>
       </dl>
       <div>
-        <div v-for="i in r.images">
-          <img :src="i.data">
-          <div style="text-align:right">{{ new Date(i.lastModified) | moment().format('YYYY-MM-DD HH:mm') }}</div>
+        <div v-for="i in r.images" style="text-align:center">
+          <img :src="i.data" style="max-width: 60%; max-height:160px">
+          <div style="position:relative">
+            <div style="float:left">{{ i.size | bytes() }}</div>
+            <div style="margin-left: 120px; text-align:right">拍摄于 {{new Date(i.lastModified) | moment().format('YYYY-MM-DD hh:mm')}}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -37,6 +40,8 @@ dt {
 
 
 <script>
+import _ from 'lodash'
+
 export default {
   data() {
     return {
@@ -54,19 +59,24 @@ export default {
   methods: {
     upload() {
       // 上传巡检记录(包括照片)
-      let posts = this.records.map(e => {
-        return this.$axios.post('/api/inspects', e)
+      let results = []
+      this.records.forEach((e, i) => {
+        this.$axios
+          .post('/api/inspects', e)
+          .then(r => {
+            this.$db.inspects.delete(e.device).then(r2 => {
+              _.remove(this.records, e2 => {
+                return e2.device == e.device
+              })
+              let msg = `上传成功：${e.name}`
+              console.info(msg)
+              alert(msg)
+            })
+          })
+          .catch(error => {
+            alert(`上传${e.name}时出错：${error}`)
+          })
       })
-      this.$axios
-        .all(posts)
-        .then(r => {
-          this.$db.inspects.clear()
-          this.records = []
-          alert('上传成功！')
-        })
-        .catch(error => {
-          alert('上传时出错：' + error)
-        })
     }
   }
 }
