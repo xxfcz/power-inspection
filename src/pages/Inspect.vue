@@ -14,10 +14,12 @@
     </div>
     <div class="section">
       <label>选择照片：
-        <input type="file" accept="image/*" @change="fileChanged">
+        <input type="file" accept="image/*" multiple @change="fileChanged">
       </label>
-      <img :src="image" style="width: 60%">
-      <div>拍摄于 {{imageTime}}</div>
+      <div v-for="i in images">
+        <img :src="i.data" style="width: 60%">
+        <div style="text-align:right">拍摄于 {{i.time}}</div>
+      </div>
     </div>
     <div class="section">
       <label>正常
@@ -51,6 +53,7 @@ option:disabled {
 
 <script>
 import utils from '@/utils'
+import _ from 'lodash'
 
 const DIST_LIMIT = 500 // 不显示距离超过500米的设备
 
@@ -63,11 +66,10 @@ export default {
       // 附近的设备
       devices: [],
       // 拍摄的照片
-      image: null,
-      imageTime: null,
+      images: [],
       // 设备状态
       deviceName: '',
-      deviceStatus: 'normal',
+      deviceStatus: 'normal'
     }
   },
   mounted() {
@@ -136,25 +138,32 @@ export default {
     fileChanged(e) {
       var files = e.target.files || e.dataTransfer.files
       if (!files.length) return
-      this.createImage(files[0])
-      this.imageTime = files[0].lastModifiedDate
+      _.forEach(files, f => {
+        this.createImage(f).then(data => {
+          this.images.push({
+            data: data,
+            time: f.lastModifiedDate
+          })
+        })
+      })
     },
     createImage(file) {
-      let image = new Image()
-      let reader = new FileReader()
-      let vm = this
-      reader.onload = e => {
-        vm.image = e.target.result
-      }
-      reader.readAsDataURL(file)
+      return new Promise((resolve, reject) => {
+        let image = new Image()
+        let reader = new FileReader()
+        reader.onload = e => {
+          resolve(e.target.result)
+        }
+        reader.readAsDataURL(file)
+      })
     },
-    save(e) {
+    // 保存到本地
+    save() {
       this.$db.inspects
         .add({
           device: this.deviceName,
           deviceStatus: this.deviceStatus,
-          imageData: this.image,
-          imageTime: this.imageTime,
+          images: this.images,
           longitude: this.longitude,
           latitude: this.latitude,
           createTime: new Date()
