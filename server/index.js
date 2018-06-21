@@ -17,12 +17,13 @@ const MAX_BODY_SIZE = process.env.NODE_ENV === 'production' ? config.build.max_b
 app.use(express.static(path.join(__dirname, '../dist')))
 app.use('/upload', express.static(path.join(__dirname, './upload')))
 
+console.info('MAX_BODY_SIZE:', bytes(MAX_BODY_SIZE))
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false, limit: MAX_BODY_SIZE}))
 // parse application/json
 app.use(
   bodyParser.json({
-    limit: config.max_body_size
+    limit: MAX_BODY_SIZE
   })
 )
 
