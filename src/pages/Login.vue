@@ -35,7 +35,7 @@ export default {
       alert("登录成功！")
       let user = {
         id: 2,
-        name: "Xiao",
+        name: this.userid,
         workshopId: 4,
         workshopName: "西渡供电车间"
       }

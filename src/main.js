@@ -26,7 +26,7 @@ db.version(1).stores({
 Vue.prototype.$db = db
 
 Vue.filter('datetime', x=>{
-  return Vue.moment(x).format('YYYY-MM-DD hh:mm')
+  return Vue.moment(x).format('YYYY-MM-DD HH:mm')
 })
 
 Vue.filter('bytes', (n)=>{

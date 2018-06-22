@@ -18,6 +18,10 @@
         <dd>{{r.longitude}}，{{r.latitude}}</dd>
       </dl>
       <dl>
+        <dt>巡检人：</dt>
+        <dd>{{r.user}}</dd>
+      </dl>
+      <dl>
         <dt>设备状态：</dt>
         <dd>{{r.deviceStatus}}</dd>
       </dl>
@@ -26,7 +30,7 @@
           <img :src="i.data" style="max-width: 60%; max-height:160px">
           <div style="position:relative">
             <div style="float:left">{{ i.size | bytes() }}</div>
-            <div style="margin-left: 120px; text-align:right">拍摄于 {{new Date(i.lastModified) | moment().format('YYYY-MM-DD hh:mm')}}</div>
+            <div style="margin-left: 120px; text-align:right">拍摄于 {{new Date(i.lastModified) | datetime}}</div>
           </div>
         </div>
       </div>

@@ -63,6 +63,7 @@ const DIST_LIMIT = 500 // 不显示距离超过500米的设备
 export default {
   data() {
     return {
+      user: '',
       longitude: null,
       latitude: null,
       selectedDeviceId: '',
@@ -76,6 +77,9 @@ export default {
     }
   },
   mounted() {
+    let u = JSON.parse(localStorage.getItem('user'))
+    if(u)
+      this.user = u.name
     this.refresh(true)
   },
   methods: {
@@ -183,6 +187,7 @@ export default {
           images: this.images,
           longitude: this.longitude,
           latitude: this.latitude,
+          user: this.user,
           createTime: new Date()
         })
         .then(e => {
