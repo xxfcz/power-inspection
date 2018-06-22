@@ -10,7 +10,7 @@
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "test": "npm run unit",
     "build": "node build/build.js",
-    "server": "json-server server/db.json  -p 3002 --watch --routes server/routes.json --static dist"
+    "server": "cd server && npm run server"
   },
   "dependencies": {
     "axios": "^0.18.0",

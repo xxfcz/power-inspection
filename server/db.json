@@ -11,6 +11,10 @@
     {
       "id": 3,
       "name": "郴州供电车间"
+    },
+    {
+      "id": 4,
+      "name": "西渡供电车间"
     }
   ],
   "sections": [
@@ -59,12 +63,14 @@
     {
       "id": 2,
       "name": "Xiao",
-      "workshopId": 1
+      "workshopId": 4,
+      "password": "123456"
     },
     {
       "name": "BBC",
       "id": 4,
-      "workshopId": 1
+      "workshopId": 1,
+      "password": "123456"
     }
   ],
   "tasks": [

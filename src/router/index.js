@@ -6,6 +6,7 @@ import LocalRecords from '@/pages/LocalRecords'
 import RemoteRecords from '@/pages/RemoteRecords'
 import Tasks from '@/pages/Tasks'
 import AddTask from '@/pages/AddTask'
+import Login from '@/pages/Login'
 
 Vue.use(Router)
 
@@ -39,6 +40,11 @@ export default new Router({
       path: '/add-task',
       name: 'add-task',
       component: AddTask
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: Login
     }
   ]
 })
