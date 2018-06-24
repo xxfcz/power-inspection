@@ -34,6 +34,19 @@
       </label>
       <br>
     </div>
+    <div class="section" v-if="deviceStatus=='abnormal'">
+      <select v-model="selectedFault">
+        <option value="" disabled selected> -- 请选择故障类型 -- </option>
+        <option v-for="f in faults" :value="f">
+          {{f}}</option>
+        <option value="自定义">自定义</option>
+      </select>
+      <div v-if="selectedFault=='自定义'">
+        <label>
+          <input type="text" v-model="customFault"></label>
+        </label>
+      </div>
+    </div>
 
     <div class="section">
       <button @click="save">保存</button>
@@ -63,6 +76,9 @@ const DIST_LIMIT = 500 // 不显示距离超过500米的设备
 export default {
   data() {
     return {
+      faults: this.$faults,
+      selectedFault: '',
+      customFault: '',
       user: '',
       longitude: null,
       latitude: null,
@@ -78,8 +94,7 @@ export default {
   },
   mounted() {
     let u = JSON.parse(localStorage.getItem('user'))
-    if(u)
-      this.user = u.name
+    if (u) this.user = u.name
     this.refresh(true)
   },
   methods: {
@@ -178,11 +193,12 @@ export default {
     },
     // 保存到本地
     save() {
-      console.log(this.images)
+      let fault = this.deviceStatus == 'normal'? '' : this.selectedFault == '自定义' ? this.customFault: this.selectedFault
       this.$db.inspects
         .add({
           device: this.deviceName,
           deviceStatus: this.deviceStatus,
+          fault: fault,
           images: this.images,
           longitude: this.longitude,
           latitude: this.latitude,

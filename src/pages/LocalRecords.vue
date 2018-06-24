@@ -25,6 +25,10 @@
         <dt>设备状态：</dt>
         <dd>{{r.deviceStatus}}</dd>
       </dl>
+      <dl v-if="r.deviceStatus=='abnormal'">
+        <dt>故障类型：</dt>
+        <dd>{{r.fault}}</dd>
+      </dl>
       <div>
         <div v-for="i in r.images" style="text-align:center">
           <img :src="i.data" style="max-width: 60%; max-height:160px">

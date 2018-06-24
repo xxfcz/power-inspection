@@ -34,6 +34,9 @@ Vue.filter('bytes', (n)=>{
 })
 Vue.prototype.$bytes = bytes
 
+// 故障类型
+Vue.prototype.$faults = ['悬挂异物', '瓷瓶破损', '扎线松脱', '接头放弧', '弧垂过大', '保险熔断']
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
