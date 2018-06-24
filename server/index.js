@@ -10,7 +10,10 @@ const bytes = require('bytes')
 
 const xutils = require('./xutils')
 const config = require('../config')
-const MAX_BODY_SIZE = process.env.NODE_ENV === 'production' ? config.build.max_body_size : config.dev.max_body_size
+const MAX_BODY_SIZE =
+  process.env.NODE_ENV === 'production'
+    ? config.build.max_body_size
+    : config.dev.max_body_size
 
 //const app = jsonServer.create()
 /* static files ----------------------------------------------------- */
@@ -19,7 +22,7 @@ app.use('/upload', express.static(path.join(__dirname, './upload')))
 
 console.info('MAX_BODY_SIZE:', bytes(MAX_BODY_SIZE))
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false, limit: MAX_BODY_SIZE}))
+app.use(bodyParser.urlencoded({ extended: false, limit: MAX_BODY_SIZE }))
 // parse application/json
 app.use(
   bodyParser.json({
@@ -73,6 +76,46 @@ const postInspect = (req, res, next) => {
 app.post('/api/inspects', (req, res, next) => {
   console.log('caught: POST /api/inspects')
   postInspect(req, res, next)
+})
+
+app.get('/api/tasks', (req, res) => {
+  fs.readFile('db.json', (err, data) => {
+    if (err) {
+      console.error(err)
+      res.status(500).send(err.message)
+    } else {
+      console.log(req.query)
+      let userId = parseInt(req.query.userid)
+      data = JSON.parse(data)
+      console.log(data.users)
+      let user = _.find(data.users, { id: userId })
+      if (!user) {
+        let err = `query userid not found: ${userId}`
+        res.status(500).send(err)
+        return
+      }
+      // 用户所在车间
+      let workshop = _.find(data.workshops, { id: user.workshopId })
+      if (!workshop) {
+        res.status(500).send(`user's workshopid not found: ${user.workshopId}`)
+        return
+      }
+      // 车间管内区段
+      let sections = _.filter(data.sections, { workshopId: user.workshopId })
+      // 车间管内设备/任务
+      let tasks = _.filter(data.tasks, t => {
+        return _.findIndex(sections, { id: t.sectionId }) > -1
+      })
+      _.forEach(tasks, t => {
+        let sec = _.find(sections, { id: t.sectionId })
+        if (sec) {
+          t.sectionName = sec.name
+          t.workshopName = workshop.name
+        }
+      })
+      res.send(tasks)
+    }
+  })
 })
 
 /* API handler ----------------------------------------------------- */

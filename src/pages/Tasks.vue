@@ -6,8 +6,13 @@
     <span>最后更新时间：{{lastUpdateTime | moment().format('MM-DD HH:mm')}}</span>
     <ul>
       <div v-for="task in tasks">
-        {{task.id}}. {{task.device}} @({{task.longitude}},{{task.latitude}})
-        <span v-if="task.finished">已检</span>
+        <div>
+          {{task.id}}. <span style="font-weight:bold">{{task.device}}</span>
+          <span v-if="task.finished">已检</span>
+        </div>
+        <div style="margin-left:2em">
+          坐标：{{task.longitude}},{{task.latitude}}<br> 区段：{{task.sectionName}}
+        </div>
       </div>
     </ul>
   </div>
@@ -17,6 +22,7 @@
 export default {
   data() {
     return {
+      user: this.getUser(),
       tasks: [],
       lastUpdateTime: new Date()
     }
@@ -44,13 +50,19 @@ export default {
     }
   },
   methods: {
+    getUser() {
+      return JSON.parse(localStorage.getItem('user'))
+    },
+
     download() {
       if (!navigator.onLine) {
         alert('您已离线，无法下载')
         return
       }
       this.$axios
-        .get('/api/tasks')
+        .get('/api/tasks', {
+          params: { userid: this.user.id }
+        })
         .then(resp => {
           var tasks = resp.data
           this.tasks = tasks

@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div>当前用户：{{user || '请登录'}}</div>
+    <div>当前用户：{{ user.name || '请登录' }}</div>
+    <div style="margin-left: 2em" v-if="user">{{user.workshopName}}</div>
     <ul>
       <li>
         <button @click="logout" v-if="user">注销</button>
@@ -48,7 +49,9 @@ export default {
   methods: {
     initUser() {
       let user = this.getUser()
-      if (user != null) this.user = user.name
+      if (user != null) {
+        this.user = user
+      } 
       else this.user = ""
     },
     getUser() {
