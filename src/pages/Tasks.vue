@@ -7,7 +7,8 @@
     <ul>
       <div v-for="task in tasks">
         <div>
-          {{task.id}}. <span style="font-weight:bold">{{task.device}}</span>
+          {{task.id}}.
+          <span style="font-weight:bold">{{task.device}}</span>
           <span v-if="task.finished">已检</span>
         </div>
         <div style="margin-left:2em">
@@ -68,7 +69,10 @@ export default {
           this.tasks = tasks
           this.lastUpdateTime = new Date()
           this.$db.tasks
-            .bulkPut(tasks)
+            .clear()
+            .then(() => {
+              return this.$db.tasks.bulkPut(tasks)
+            })
             .then(r => {
               return this.$db.config.put({
                 name: 'tasks.lastUpdateTime',

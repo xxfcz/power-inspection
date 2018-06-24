@@ -9,7 +9,7 @@
       <select v-model="selectedDeviceId" @change="deviceChanged()">
         <option value="" disabled> -- 请选择设备 -- </option>
         <option v-for="d in devices" :value="d.id" :data-distance="d.distance" :disabled="d.disabled">
-          {{d.name}} - {{d.distance}}m {{d.disabled?'（不可选）':''}}</option>
+          {{d.sectionName}} {{d.name}} - {{d.distance}}m {{d.disabled?'（不可选）':''}}</option>
       </select>
     </div>
     <div class="section">
@@ -106,19 +106,18 @@ export default {
       this.$db.tasks.toArray(tasks => {
         tasks.forEach(t => {
           // 计算每个设备到当前位置的距离
-          let d = this.$utils.calcDistance(
+          let dist = this.$utils.calcDistance(
             t.latitude,
             t.longitude,
             this.latitude,
             this.longitude
           )
           // 添加到显示用的设备列表
-          this.devices.push({
-            id: t.id,
-            name: t.device,
-            distance: parseInt(d),
-            disabled: parseInt(d) > DIST_LIMIT
-          })
+          let dev = t
+          t.name = t.device
+          t.distance = parseInt(dist)
+          t.disabled = dist > DIST_LIMIT
+          this.devices.push(dev)
           // 按距离升序排列
           this.devices.sort((a, b) => {
             return a.distance - b.distance
