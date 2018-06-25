@@ -25,7 +25,7 @@ const postInspect = (req, res, next) => {
       parseInt(Math.random() * 1000) +
       ext
     let fileUrl = '/upload/' + fileName
-    let savePath = path.join(__dirname, 'upload', fileName)
+    let savePath = path.join(__dirname, '../upload', fileName)
     savePs.push(
       xutils
         .saveDataImage(savePath, imgData)
@@ -47,7 +47,7 @@ const postInspect = (req, res, next) => {
     })
     .catch(r => {
       console.error(r)
-      res.send(500, 'Error saving images')
+      res.status(500).send('Error saving images')
     })
 }
 

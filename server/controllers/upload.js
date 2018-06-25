@@ -4,9 +4,10 @@ const router = express.Router()
 // 文件上传
 router.post('/', (req, res) => {
   var form = new formidable.IncomingForm()
-  form.uploadDir = path.join(__dirname, './upload')
+  form.uploadDir = path.join(__dirname, '../upload')
+  console.log(form.uploadDir)
   form.keepExtensions = true
-  form.maxFileSize = 5 * 1024 * 1024
+  form.maxFileSize = 20 * 1024 * 1024
 
   form.parse(req, function(err, fields, files) {
     res.send(
