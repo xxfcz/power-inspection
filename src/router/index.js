@@ -8,6 +8,7 @@ import Tasks from '@/pages/Tasks'
 import AddTask from '@/pages/AddTask'
 import Login from '@/pages/Login'
 import DeviceReport from '@/pages/reports/DeviceReport'
+import InspectReport from '@/pages/reports/InspectReport'
 
 Vue.use(Router)
 
@@ -51,6 +52,11 @@ export default new Router({
       path: '/device_report',
       name: 'device_report',
       component: DeviceReport
+    },
+    {
+      path: '/inspect_report',
+      name: 'inspect_report',
+      component: InspectReport
     }
   ]
 })

@@ -30,7 +30,7 @@ exports.exportXlsx = (res, data, sheetName = 'Sheet') => {
   )
   XLSX.writeFile(wb, fn)
   // send file to browser
-  res.download(fn, err => {
+  res.download(fn, sheetName + '.xlsx', err => {
     if (err) {
       console.warn(err)
     } else {

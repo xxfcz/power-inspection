@@ -74,7 +74,7 @@
       "workshopName": "衡阳供电车间",
       "password": "123456"
     },
-   {
+    {
       "name": "李四",
       "id": 4,
       "workshopId": 2,
@@ -127,5 +127,26 @@
     }
   ],
   "inspects": [
+    {
+      "workshop": "耒阳供电车间",
+      "section": "哲桥至耒阳自闭",
+      "device": "自装设备A",
+      "deviceStatus": "abnormal",
+      "fault": "扎线松脱",
+      "images": [
+        {
+          "name": "kelly_sweet.jpg",
+          "size": 24086,
+          "lastModified": 1528953029053,
+          "type": "image/jpeg",
+          "url": "/upload/kelly_sweet_1529932638319_53.jpg"
+        }
+      ],
+      "longitude": 111.899639,
+      "latitude": 27.184422,
+      "user": "李四",
+      "createTime": "2018-06-25T13:15:37.806Z",
+      "id": 1
+    }
   ]
 }

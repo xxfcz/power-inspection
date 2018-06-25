@@ -3,6 +3,7 @@ const router = express.Router()
 const path = require('path')
 const fs = require('fs')
 const _ = require('lodash')
+const moment = require('moment')
 const jsonServer = require('json-server')
 
 const xutils = require('../xutils')
@@ -110,6 +111,45 @@ router.get('/tasks', (req, res) => {
         require('../xutils').exportXlsx(res, tasks, '设备清单')
       else
         res.send(tasks)
+    }
+  })
+})
+
+router.get('/inspects', (req, res) => {
+  fs.readFile(dbFile, (err, data) => {
+    if (err) {
+      console.error(err)
+      res.status(500).send(err.message)
+    } else {
+      data = JSON.parse(data)
+
+      console.log(req.query)
+      let w = req.query.w
+      let d1 = req.query.d1
+      let d2 = req.query.d2
+      let _export = false
+      // 参数 _export
+      if(req.query._export)
+        _export = req.query._export == 'true'
+
+      // 取巡检记录
+      let inspects = _.filter(data.inspects, t => {
+        let result = true
+        if (result && w){
+          result = result && (t.workshop == w)
+        }
+        if(result && d1){
+          result = result && (t.createTime.substring(0,10) >= d1)
+        }
+        if(result && d2){
+          result = result && (t.createTime.substring(0,10) <= d2)
+        }
+        return result
+      })
+      if(_export)
+        require('../xutils').exportXlsx(res, inspects, '巡检记录')
+      else
+        res.send(inspects)
     }
   })
 })

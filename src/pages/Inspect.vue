@@ -6,10 +6,10 @@
     </div>
     <div class="section">
       <button @click="scanDevices">刷新附近设备</button>
-      <select v-model="selectedDeviceId" @change="deviceChanged()">
+      <select v-model="selectedDevice">
         <option value="" disabled> -- 请选择设备 -- </option>
-        <option v-for="d in devices" :value="d.id" :data-distance="d.distance" :disabled="d.disabled">
-          {{d.sectionName}} {{d.name}} - {{d.distance}}m {{d.disabled?'（不可选）':''}}</option>
+        <option v-for="d in devices" :value="d" :data-distance="d.distance" :disabled="d.disabled">
+          {{d.sectionName}} {{d.device}} - {{d.distance}}m {{d.disabled?'（不可选）':''}}</option>
       </select>
     </div>
     <div class="section">
@@ -76,20 +76,20 @@ const DIST_LIMIT = 500 // 不显示距离超过500米的设备
 export default {
   data() {
     return {
+      // 预定义缺陷
       faults: this.$faults,
+      // 附近的设备
+      devices: [],
+      // 选中的设备
+      selectedDevice: null,
+      deviceStatus: 'normal',
       selectedFault: '',
       customFault: '',
       user: '',
       longitude: null,
       latitude: null,
-      selectedDeviceId: '',
-      // 附近的设备
-      devices: [],
       // 拍摄的照片
-      images: [],
-      // 设备状态
-      deviceName: '',
-      deviceStatus: 'normal'
+      images: []
     }
   },
   mounted() {
@@ -128,11 +128,9 @@ export default {
             this.longitude
           )
           // 添加到显示用的设备列表
-          let dev = t
-          t.name = t.device
           t.distance = parseInt(dist)
           t.disabled = dist > DIST_LIMIT
-          this.devices.push(dev)
+          this.devices.push(t)
           // 按距离升序排列
           this.devices.sort((a, b) => {
             return a.distance - b.distance
@@ -149,12 +147,6 @@ export default {
         .catch(s => {
           alert(s)
         })
-    },
-    deviceChanged() {
-      let theDevice = this.devices.find(e => {
-        return e.id == this.selectedDeviceId
-      })
-      this.deviceName = theDevice.name
     },
     fileChanged(e) {
       var files = e.target.files || e.dataTransfer.files
@@ -177,7 +169,6 @@ export default {
             type: f.type,
             data: data // Base64
           })
-          console.log(f)
         })
       })
     },
@@ -193,10 +184,18 @@ export default {
     },
     // 保存到本地
     save() {
-      let fault = this.deviceStatus == 'normal'? '' : this.selectedFault == '自定义' ? this.customFault: this.selectedFault
+      let fault =
+        this.deviceStatus == 'normal'
+          ? ''
+          : this.selectedFault == '自定义'
+            ? this.customFault
+            : this.selectedFault
+      let dev = this.selectedDevice
       this.$db.inspects
         .add({
-          device: this.deviceName,
+          workshop: dev.workshopName,
+          section: dev.sectionName,
+          device: dev.device,
           deviceStatus: this.deviceStatus,
           fault: fault,
           images: this.images,
