@@ -32,7 +32,7 @@
             <router-link to="device_report">设备清单</router-link>
           </li>
           <li>
-            <router-link to="inpect_report">巡检记录</router-link>
+            <router-link to="inspect_report">巡检记录</router-link>
           </li>
           <li>
             <router-link to="fault_report">问题库</router-link>
