@@ -47,7 +47,7 @@ module.exports = {
     cssSourceMap: true,
 
     // custom items
-    max_body_size: 2 * 1024 * 1024
+    max_body_size: 20 * 1024 * 1024
   },
 
   build: {
