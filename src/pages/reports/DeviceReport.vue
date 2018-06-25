@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h2>报表：设备清单</h2>
     <!-- 输入面板 -->
     <div>
       <label>车间：
@@ -8,7 +9,7 @@
         </select>
       </label>
     </div>
-    <div style="text-align:center">
+    <div style="text-align:center;margin-top: 12px">
       <button @click="onQuery">查询</button>
       <button @click="onExport">导出</button>
     </div>
