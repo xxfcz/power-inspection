@@ -62,7 +62,7 @@ export default {
       }
       this.$axios
         .get('/api/tasks', {
-          params: { userid: this.user.id }
+          params: { uid: this.user.id }
         })
         .then(resp => {
           var tasks = resp.data

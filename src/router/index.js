@@ -7,6 +7,7 @@ import RemoteRecords from '@/pages/RemoteRecords'
 import Tasks from '@/pages/Tasks'
 import AddTask from '@/pages/AddTask'
 import Login from '@/pages/Login'
+import DeviceReport from '@/pages/reports/DeviceReport'
 
 Vue.use(Router)
 
@@ -28,23 +29,28 @@ export default new Router({
       component: Tasks
     },
     {
-      path: '/local-records',
-      name: 'local-records',
+      path: '/local_records',
+      name: 'local_records',
       component: LocalRecords
     },
     {
-      path: '/remote-records',
-      name: 'remote-records',
+      path: '/remote_records',
+      name: 'remote_records',
       component: RemoteRecords
     },{
-      path: '/add-task',
-      name: 'add-task',
+      path: '/add_task',
+      name: 'add_task',
       component: AddTask
     },
     {
       path: '/login',
       name: 'login',
       component: Login
+    },
+    {
+      path: '/device_report',
+      name: 'device_report',
+      component: DeviceReport
     }
   ]
 })

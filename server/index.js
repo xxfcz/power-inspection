@@ -10,6 +10,8 @@ const bytes = require('bytes')
 
 const xutils = require('./xutils')
 const config = require('../config')
+const routes = require('./routes')
+
 const MAX_BODY_SIZE =
   process.env.NODE_ENV === 'production'
     ? config.build.max_body_size
@@ -29,6 +31,8 @@ app.use(
     limit: MAX_BODY_SIZE
   })
 )
+
+routes(app)
 
 // req.body 中只含一个 Inspect 对象
 const postInspect = (req, res, next) => {
@@ -84,24 +88,38 @@ app.get('/api/tasks', (req, res) => {
       console.error(err)
       res.status(500).send(err.message)
     } else {
-      console.log(req.query)
-      let userId = parseInt(req.query.userid)
-      data = JSON.parse(data)
-      console.log(data.users)
-      let user = _.find(data.users, { id: userId })
-      if (!user) {
-        let err = `query userid not found: ${userId}`
-        res.status(500).send(err)
-        return
+      let uid = null
+      let wid = null
+      let _export = false
+      let workshop = null
+      // 参数 uid： 用户ID
+      if (req.query.uid) {
+        uid = parseInt(req.query.uid)
+        let user = _.find(data.users, { id: uid })
+        if (!user) {
+          let err = `no user for query param: uid=${uid}`
+          res.status(500).send(err)
+          return
+        }
+        wid = user.workshopId
       }
-      // 用户所在车间
-      let workshop = _.find(data.workshops, { id: user.workshopId })
+      // 参数 wid: 车间ID
+      if (req.query.wid){
+        wid = parseInt(req.query.wid)
+      }
+      // 参数 _export
+      if(req.query._export)
+        _export = req.query._export == 'true'
+
+      data = JSON.parse(data)
+      // 取车间
+      workshop = _.find(data.workshops, { id: wid })
       if (!workshop) {
-        res.status(500).send(`user's workshopid not found: ${user.workshopId}`)
+        res.status(500).send(`no workshop for wid=${wid}`)
         return
       }
       // 车间管内区段
-      let sections = _.filter(data.sections, { workshopId: user.workshopId })
+      let sections = _.filter(data.sections, { workshopId: wid })
       // 车间管内设备/任务
       let tasks = _.filter(data.tasks, t => {
         return _.findIndex(sections, { id: t.sectionId }) > -1
@@ -113,10 +131,14 @@ app.get('/api/tasks', (req, res) => {
           t.workshopName = workshop.name
         }
       })
-      res.send(tasks)
+      if(_export)
+        require('./export_tasks')(req, res, tasks)
+      else
+        res.send(tasks)
     }
   })
 })
+
 
 /* API handler ----------------------------------------------------- */
 const router = jsonServer.router(path.join(__dirname, 'db.json'))
