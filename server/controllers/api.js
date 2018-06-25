@@ -107,7 +107,7 @@ router.get('/tasks', (req, res) => {
         }
       })
       if(_export)
-        require('./export_tasks')(req, res, tasks)
+        require('../xutils').exportXlsx(res, tasks, '设备清单')
       else
         res.send(tasks)
     }
