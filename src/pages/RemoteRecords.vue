@@ -25,7 +25,7 @@
         <dd>{{r.fault}}</dd>
       </dl>
       <div v-for="i in r.images" style="text-align:center">
-        <img :src="i.data" style="max-width: 60%; max-height:160px">
+        <img :src="i.url" style="max-width: 60%; max-height:160px">
         <div style="position:relative">
           <div style="float:left">{{ i.size | bytes() }}</div>
           <div style="margin-left: 120px; text-align:right">拍摄于 {{new Date(i.lastModified) | moment().format('YYYY-MM-DD hh:mm')}}</div>
