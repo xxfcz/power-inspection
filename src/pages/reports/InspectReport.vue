@@ -25,7 +25,7 @@
     </div>
     <!-- 结果网格 -->
     <div style="overflow-x: scroll">
-      <table style="width: 800px;">
+      <table style="width: 560px;">
         <thead>
           <tr>
             <th>区段</th>
@@ -38,12 +38,12 @@
         </thead>
         <tbody>
           <tr v-for="i in inspects">
-            <th>{{i.section}}</th>
-            <th>{{i.device}}</th>
-            <th>{{i.deviceStatus}}</th>
-            <th>{{i.fault || '无'}}</th>
-            <th>{{i.createTime | datetime}}</th>
-            <th>{{i.user}}</th>
+            <td>{{i.section}}</td>
+            <td>{{i.device}}</td>
+            <td>{{i.deviceStatus}}</td>
+            <td>{{i.fault || '无'}}</td>
+            <td>{{i.createTime | datetime}}</td>
+            <td>{{i.user}}</td>
           </tr>
         </tbody>
       </table>

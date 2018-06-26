@@ -15,7 +15,7 @@
     </div>
     <!-- 结果网格 -->
     <div style="overflow-x: scroll">
-      <table style="width: 800px;">
+      <table style="width: 480px;">
         <thead>
           <tr>
             <th>ID</th>
@@ -26,10 +26,10 @@
         </thead>
         <tbody>
           <tr v-for="t in tasks">
-            <th>{{t.id}}</th>
-            <th>{{t.sectionName}}</th>
-            <th>{{t.device}}</th>
-            <th>{{t.latitude}},{{t.longitude}}</th>
+            <td>{{t.id}}</td>
+            <td>{{t.sectionName}}</td>
+            <td>{{t.device}}</td>
+            <td>{{t.latitude}},{{t.longitude}}</td>
           </tr>
         </tbody>
       </table>
