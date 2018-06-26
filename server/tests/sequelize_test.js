@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
+const PLAIN = { plain: true }
 
 const sequelize = new Sequelize('powerins', 'postgres', 'postgres', {
   host: 'localhost',
@@ -37,13 +38,15 @@ const User = sequelize.define('user', {
 })
 
 Section.belongsTo(Workshop)
+Workshop.hasMany(Section)
 User.belongsTo(Workshop)
+Workshop.hasMany(User)
 
 var initDb = async () => {
   try {
     await sequelize.sync({ force: true })
-
     //await sequelize.getQueryInterface().bulkDelete('workshops')
+
     // 添加车间
     await Workshop.bulkCreate(
       ['衡阳供电车间', '耒阳供电车间', '郴州供电车间', '西渡供电车间'].map(
@@ -73,12 +76,14 @@ var initDb = async () => {
     )
 
     // 添加账号
-    let users = [['肖雪峰', 4], ['张三', 1], ['李四', 2]]
-    for (let u of users) {
+    for (let u of [['肖雪峰', 4], ['张三', 1], ['李四', 2]]) {
       await User.findOrCreate({
         where: {
           name: u[0],
           workshopId: u[1]
+        },
+        defaults: {
+          password: '123456'
         }
       })
     }
@@ -88,21 +93,29 @@ var initDb = async () => {
   }
 }
 
-var play = async () => {
+let play = async () => {
   let w1 = await Workshop.findOne({
     where: {
       name: '衡阳供电车间'
-    }
+    },
+    include: [User]
   })
-  let users = await w1.getUsers()
-  console.log(users.get({ plain: true }))
+  console.log(w1.get(PLAIN))
+
+  let user = await User.findOne({
+    where: {
+      name: '肖雪峰'
+    },
+    include: [Workshop]
+  })
+  console.log(user.get(PLAIN))
 }
 
 var run = async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    //await initDb()
+    await initDb()
 
     await play()
   } catch (err) {
