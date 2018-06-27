@@ -68,12 +68,11 @@ else
     })
   })
 
-const Model = require('./models')
-let { Workshop, Section, Device, User } = Model
-
 sequelize.authenticate().then(() => {
   app.listen(3002, () => {
     console.log(`NODE_ENV=${app.get('env')}`)
     console.log('Express Server is running on 3002...')
   })
+}).catch(err => {
+  console.error('Database error:', err)
 })

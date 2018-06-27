@@ -1,0 +1,6 @@
+{
+  "host": "localhost",
+  "port": 3003,
+  "static": "../dist",
+  "watch": true
+}

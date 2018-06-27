@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "server": "nodemon index.js --ignore upload/*.*",
+    "json": "json-server -c json-server.json db.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
