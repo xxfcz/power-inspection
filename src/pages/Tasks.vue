@@ -8,11 +8,11 @@
       <div v-for="task in tasks">
         <div>
           {{task.id}}.
-          <span style="font-weight:bold">{{task.device}}</span>
+          <span style="font-weight:bold">{{task.name}}</span>
           <span v-if="task.finished">已检</span>
         </div>
         <div style="margin-left:2em">
-          坐标：{{task.longitude}},{{task.latitude}}<br> 区段：{{task.sectionName}}
+          坐标：{{task.longitude}},{{task.latitude}}<br> 区段：{{task.section.name}}
         </div>
       </div>
     </ul>
@@ -61,8 +61,8 @@ export default {
         return
       }
       this.$axios
-        .get('/api/tasks', {
-          params: { uid: this.user.id }
+        .get('/api/devices', {
+          params: { wid: this.user.workshopId }
         })
         .then(resp => {
           var tasks = resp.data
@@ -85,6 +85,7 @@ export default {
         })
         .catch(function(response) {
           console.error(response)
+          alert(response)
         })
     }
   }

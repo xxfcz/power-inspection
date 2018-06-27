@@ -9,7 +9,7 @@
       <select v-model="selectedDevice">
         <option value="" disabled> -- 请选择设备 -- </option>
         <option v-for="d in devices" :value="d" :data-distance="d.distance" :disabled="d.disabled">
-          {{d.sectionName}} {{d.device}} - {{d.distance}}m {{d.disabled?'（不可选）':''}}</option>
+          {{d.section.name}} {{d.name}} - {{d.distance}}m {{d.disabled?'（不可选）':''}}</option>
       </select>
     </div>
     <div class="section">
@@ -85,7 +85,7 @@ export default {
       deviceStatus: 'normal',
       selectedFault: '',
       customFault: '',
-      user: '',
+      user: {},
       longitude: null,
       latitude: null,
       // 拍摄的照片
@@ -94,7 +94,7 @@ export default {
   },
   mounted() {
     let u = JSON.parse(localStorage.getItem('user'))
-    if (u) this.user = u.name
+    if (u) this.user = u
     this.refresh(true)
   },
   methods: {
@@ -193,16 +193,16 @@ export default {
       let dev = this.selectedDevice
       this.$db.inspects
         .add({
-          workshop: dev.workshopName,
-          section: dev.sectionName,
-          device: dev.device,
+          workshop: this.user.workshop.name,
+          section: dev.section.name,
+          device: dev.name,
           deviceStatus: this.deviceStatus,
           fault: fault,
           images: this.images,
           longitude: this.longitude,
           latitude: this.latitude,
-          user: this.user,
-          createTime: new Date()
+          user: this.user.name,
+          createdAt: new Date()
         })
         .then(e => {
           alert('保存成功！')
