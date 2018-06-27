@@ -27,8 +27,8 @@
         <tbody>
           <tr v-for="t in tasks">
             <td>{{t.id}}</td>
-            <td>{{t.sectionName}}</td>
-            <td>{{t.device}}</td>
+            <td>{{t.section.name}}</td>
+            <td>{{t.name}}</td>
             <td>{{t.latitude}},{{t.longitude}}</td>
           </tr>
         </tbody>
@@ -58,13 +58,13 @@ export default {
 
     onQuery() {
       let wid = this.selectedWorkshop.id
-      this.$axios.get('/api/tasks', { params: { wid: wid } }).then(r => {
+      this.$axios.get('/api/devices', { params: { wid: wid } }).then(r => {
         this.tasks = r.data
       })
     },
     onExport() {
       let wid = this.selectedWorkshop.id
-      let url = `/api/tasks?wid=${wid}&_export=true`
+      let url = `/api/devices?wid=${wid}&_export=true`
       window.open(url, '_blank')
     }
   }

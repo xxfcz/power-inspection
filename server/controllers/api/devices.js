@@ -1,6 +1,5 @@
 const express = require('express')
 const router = express.Router()
-const db = require('../../db')
 const {User, Section, Device} = require('../../models')
 const xutils = require('../../xutils')
 
@@ -25,7 +24,15 @@ router.get('/', async (req, res) => {
     }
   })
 
-  if (_export) xutils.exportXlsx(res, devices, '设备清单')
+  if (_export) xutils.exportXlsx(res, devices.map(e=>{
+    return {
+      id: e.id,
+      name: e.name,
+      section: e.section.name,
+      latitude: e.latitude,
+      longitude: e.longitude
+    }
+  }), '设备清单')
   else res.send(devices)
 })
 
