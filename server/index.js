@@ -68,7 +68,7 @@ else
     })
   })
 
-const Model = require('./models')(sequelize)
+const Model = require('./models')
 let { Workshop, Section, Device, User } = Model
 
 sequelize.authenticate().then(() => {

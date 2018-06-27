@@ -6,7 +6,7 @@ const _ = require('lodash')
 const moment = require('moment')
 //const jsonServer = require('json-server')
 const sequelize = require('../db')
-const Model = require('../models')(sequelize)
+const Model = require('../models')
 let { Workshop, Section, Device, User } = Model
 
 const xutils = require('../xutils')
