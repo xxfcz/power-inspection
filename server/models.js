@@ -34,10 +34,23 @@ const Device = sequelize.define('device', {
 Device.belongsTo(Section)
 Section.hasMany(Device)
 
+const Inspect = sequelize.define('inspect', {
+  workshop: { type: Sequelize.STRING },
+  section: { type: Sequelize.STRING },
+  device: { type: Sequelize.STRING },
+  user: {type: Sequelize.STRING},
+  deviceStatus: { type: Sequelize.STRING },
+  fault: {type: Sequelize.STRING},
+  images: {type: Sequelize.JSON},
+  latitude: {type: Sequelize.DOUBLE},
+  longitude: {type: Sequelize.DOUBLE},
+})
+
 module.exports = {
     Workshop: Workshop,
     Section: Section,
     Device: Device,
-    User: User
+    User: User,
+    Inspect: Inspect
   }
 

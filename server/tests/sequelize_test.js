@@ -21,7 +21,7 @@ const dbFile = path.join(__dirname, '../db.json')
 const sequelize = require('../db')
 
 const Model = require('../models')
-let {Workshop,Section,Device,User} = Model
+let { Workshop, Section, Device, User } = Model
 
 var initDb = async () => {
   try {
@@ -50,40 +50,61 @@ var initDb = async () => {
     await Device.bulkCreate(data.devices)
     maxid = await Device.max('id')
     await sequelize.query(`select setval('devices_id_seq', ${maxid})`)
-
   } catch (err) {
     console.log('===============================================')
     console.error('initDb(): Error occurred:', err)
   }
 }
 
-let play = async () => {
-  // let w1 = await Workshop.findOne({
-  //   where: {
-  //     name: '衡阳供电车间'
-  //   },
-  //   include: [User]
-  // })
-  // console.log(w1.get(PLAIN))
+let play1 = async () => {
+  let w1 = await Workshop.findOne({
+    where: {
+      name: '衡阳供电车间'
+    },
+    include: [User]
+  })
+  console.log(w1.get(PLAIN))
 
-  // let user = await User.findOne({
-  //   where: {
-  //     name: '肖雪峰'
-  //   },
-  //   include: [Workshop]
-  // })
-  // console.log(user.get(PLAIN))
+  let user = await User.findOne({
+    where: {
+      name: '肖雪峰'
+    },
+    include: [Workshop]
+  })
+  console.log(user.get(PLAIN))
+}
 
-  // workshopId=1的设备
+let play2 = async () => {
+  //workshopId=1的设备
   let devices = await Device.findAll({
-    include:{
+    include: {
       model: Section,
       where: {
         workshopId: 1
       }
     }
   })
-  console.log(devices.map(e=>{return e.get(PLAIN)}))
+  console.log(
+    devices.map(e => {
+      return e.get(PLAIN)
+    })
+  )
+}
+
+let play3 = async () => {
+  let inspects = await Device.findAll({
+    include: {
+      model: Section,
+      where: {
+        workshopId: 1
+      }
+    }
+  })
+  console.log(
+    devices.map(e => {
+      return e.get(PLAIN)
+    })
+  )
 }
 
 var run = async () => {
