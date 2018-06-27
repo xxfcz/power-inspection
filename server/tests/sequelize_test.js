@@ -1,20 +1,29 @@
+const path = require('path')
+const _ = require('lodash')
+const fse = require('fs-extra')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 const PLAIN = { plain: true }
+const dbFile = path.join(__dirname, '../db.json')
 
-const sequelize = new Sequelize('powerins', 'postgres', 'postgres', {
-  host: 'localhost',
-  dialect: 'postgres',
-  operatorsAliases: false,
+// const sequelize = new Sequelize('powerins', 'postgres', 'postgres', {
+//   host: 'localhost',
+//   dialect: 'postgres',
+//   operatorsAliases: false,
 
-  pool: {
-    max: 5,
-    min: 0,
-    acquire: 30000,
-    idle: 10000
+//   pool: {
+//     max: 5,
+//     min: 0,
+//     acquire: 30000,
+//     idle: 10000
+//   }
+// })
+const sequelize = new Sequelize(
+  'postgres://postgres:postgres@localhost/powerins',
+  {
+    logging: false
   }
-})
-// const sequelize = new Sequelize('postgres://user:pass@example.com:5432/dbname');
+)
 
 const Workshop = sequelize.define('workshop', {
   name: {
@@ -27,6 +36,8 @@ const Section = sequelize.define('section', {
     type: Sequelize.STRING
   }
 })
+Section.belongsTo(Workshop)
+Workshop.hasMany(Section)
 
 const User = sequelize.define('user', {
   name: {
@@ -36,57 +47,45 @@ const User = sequelize.define('user', {
     type: Sequelize.STRING
   }
 })
-
-Section.belongsTo(Workshop)
-Workshop.hasMany(Section)
 User.belongsTo(Workshop)
 Workshop.hasMany(User)
+
+const Device = sequelize.define('device', {
+  name: { type: Sequelize.STRING },
+  latitude: { type: Sequelize.DOUBLE },
+  longitude: { type: Sequelize.DOUBLE }
+})
+Device.belongsTo(Section)
+Section.hasMany(Device)
 
 var initDb = async () => {
   try {
     await sequelize.sync({ force: true })
     //await sequelize.getQueryInterface().bulkDelete('workshops')
+    let data = await fse.readFile(dbFile)
+    data = JSON.parse(data)
 
     // 添加车间
-    await Workshop.bulkCreate(
-      ['衡阳供电车间', '耒阳供电车间', '郴州供电车间', '西渡供电车间'].map(
-        e => {
-          return { name: e }
-        }
-      )
-    )
+    await Workshop.bulkCreate(data.workshops)
+    //let max = _.maxBy(data.workshops, e=>{return e.id})
+    let maxid = await Workshop.max('id')
+    await sequelize.query(`select setval('workshops_id_seq', ${maxid})`)
 
     // 添加区段
-    await Section.bulkCreate(
-      [
-        ['衡阳至周家坳自闭', 1],
-        ['衡阳至周家坳贯通', 1],
-        ['周家坳至东阳渡自闭', 1],
-        ['周家坳至东阳渡贯通', 1],
-        ['东阳渡至向阳桥自闭', 1],
-        ['东阳渡至向阳桥贯通', 1],
-        ['哲桥至耒阳自闭', 2],
-        ['哲桥至耒阳贯通', 2]
-      ].map(e => {
-        return {
-          name: e[0],
-          workshopId: e[1]
-        }
-      })
-    )
+    await Section.bulkCreate(data.sections)
+    maxid = await Section.max('id')
+    await sequelize.query(`select setval('sections_id_seq', ${maxid})`)
 
     // 添加账号
-    for (let u of [['肖雪峰', 4], ['张三', 1], ['李四', 2]]) {
-      await User.findOrCreate({
-        where: {
-          name: u[0],
-          workshopId: u[1]
-        },
-        defaults: {
-          password: '123456'
-        }
-      })
-    }
+    await User.bulkCreate(data.users)
+    maxid = await User.max('id')
+    await sequelize.query(`select setval('users_id_seq', ${maxid})`)
+
+    // 添加设备
+    await Device.bulkCreate(data.devices)
+    maxid = await Device.max('id')
+    await sequelize.query(`select setval('devices_id_seq', ${maxid})`)
+
   } catch (err) {
     console.log('===============================================')
     console.error('initDb(): Error occurred:', err)
@@ -126,16 +125,10 @@ var run = async () => {
   }
 }
 
-const Project = sequelize.define('project', {
-  name: Sequelize.STRING
-})
-
-Project.hasOne(User)
-
 var test = async () => {
   await sequelize.authenticate()
   await User.sync({ force: true })
-  await Project.sync({ force: true })
+
   process.exit(0)
 }
 

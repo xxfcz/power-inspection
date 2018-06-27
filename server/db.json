@@ -64,65 +64,62 @@
       "id": 1,
       "name": "肖雪峰",
       "workshopId": 4,
-      "workshopName": "邵东供电车间",
       "password": "123456"
     },
     {
       "id": 3,
       "name": "张三",
       "workshopId": 1,
-      "workshopName": "衡阳供电车间",
       "password": "123456"
     },
     {
       "name": "李四",
       "id": 4,
       "workshopId": 2,
-      "workshopName": "耒阳供电车间",
       "password": "123456"
     }
   ],
-  "tasks": [
+  "devices": [
     {
       "id": 1,
-      "device": "箱变22#",
+      "name": "箱变22#",
       "longitude": 111.899,
       "latitude": 27.184,
       "sectionId": 1
     },
     {
       "id": 2,
-      "device": "箱变23#",
+      "name": "箱变23#",
       "longitude": 111.897,
       "latitude": 27.183,
       "sectionId": 1
     },
     {
       "id": 3,
-      "device": "箱变94#",
+      "name": "箱变94#",
       "longitude": 110.479,
       "latitude": 27.8011,
       "sectionId": 7
     },
     {
       "id": 4,
-      "device": "HH #1",
+      "name": "HH #1",
       "longitude": 112.6339035,
       "latitude": 26.8922348,
       "sectionId": 2
     },
     {
-      "device": "自装设备A",
+      "id": 5,
+      "name": "自装设备A",
       "longitude": 111.899639,
       "latitude": 27.184422,
-      "id": 5,
       "sectionId": 7
     },
     {
-      "device": "自装设备B",
+      "id": 6,
+      "name": "自装设备B",
       "longitude": "111.899",
       "latitude": "27.184",
-      "id": 6,
       "sectionId": 8
     }
   ],
