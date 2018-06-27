@@ -4,7 +4,10 @@ const path = require('path')
 const fs = require('fs')
 const _ = require('lodash')
 const moment = require('moment')
-const jsonServer = require('json-server')
+//const jsonServer = require('json-server')
+const sequelize = require('../db')
+const Model = require('../models')(sequelize)
+let { Workshop, Section, Device, User } = Model
 
 const xutils = require('../xutils')
 const dbFile = path.join(__dirname, '../db.json')
@@ -154,9 +157,9 @@ router.get('/inspects', (req, res) => {
   })
 })
 
-
-/* API handler ----------------------------------------------------- */
-const jsonRouter = jsonServer.router(dbFile)
-router.use('/', jsonRouter)
+router.get('/users', async (req, res)=>{
+  let users = await User.findAll()
+  res.send(users)
+})
 
 module.exports = router

@@ -4,9 +4,11 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const _ = require('lodash')
 const bytes = require('bytes')
+const Sequelize = require('sequelize')
 
 const config = require('../config')
 const routes = require('./routes')
+const sequelize = require('./db')
 
 const MAX_BODY_SIZE =
   process.env.NODE_ENV === 'production'
@@ -66,7 +68,12 @@ else
     })
   })
 
-app.listen(3002, () => {
-  console.log(`NODE_ENV=${app.get('env')}`)
-  console.log('Express Server is running on 3002...')
+const Model = require('./models')(sequelize)
+let { Workshop, Section, Device, User } = Model
+
+sequelize.authenticate().then(() => {
+  app.listen(3002, () => {
+    console.log(`NODE_ENV=${app.get('env')}`)
+    console.log('Express Server is running on 3002...')
+  })
 })
