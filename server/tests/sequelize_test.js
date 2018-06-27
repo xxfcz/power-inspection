@@ -18,14 +18,9 @@ const dbFile = path.join(__dirname, '../db.json')
 //     idle: 10000
 //   }
 // })
-const sequelize = new Sequelize(
-  'postgres://postgres:postgres@localhost/powerins',
-  {
-    logging: false
-  }
-)
+const sequelize = require('../db')
 
-const Model = require('../models')(sequelize)
+const Model = require('../models')
 let {Workshop,Section,Device,User} = Model
 
 var initDb = async () => {
@@ -63,28 +58,39 @@ var initDb = async () => {
 }
 
 let play = async () => {
-  let w1 = await Workshop.findOne({
-    where: {
-      name: '衡阳供电车间'
-    },
-    include: [User]
-  })
-  console.log(w1.get(PLAIN))
+  // let w1 = await Workshop.findOne({
+  //   where: {
+  //     name: '衡阳供电车间'
+  //   },
+  //   include: [User]
+  // })
+  // console.log(w1.get(PLAIN))
 
-  let user = await User.findOne({
-    where: {
-      name: '肖雪峰'
-    },
-    include: [Workshop]
+  // let user = await User.findOne({
+  //   where: {
+  //     name: '肖雪峰'
+  //   },
+  //   include: [Workshop]
+  // })
+  // console.log(user.get(PLAIN))
+
+  // workshopId=1的设备
+  let devices = await Device.findAll({
+    include:{
+      model: Section,
+      where: {
+        workshopId: 1
+      }
+    }
   })
-  console.log(user.get(PLAIN))
+  console.log(devices.map(e=>{return e.get(PLAIN)}))
 }
 
 var run = async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    await initDb()
+    //await initDb()
 
     await play()
   } catch (err) {
