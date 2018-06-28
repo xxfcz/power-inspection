@@ -3,6 +3,26 @@ const XLSX = require('xlsx')
 const os = require('os')
 const path = require('path')
 
+exports.handleError = function(err, req, res) {
+  try {
+    let status = err.status || 500
+    if (status != 404) {
+      let params
+      if (req.method == 'GET') params = ' query: ' + JSON.stringify(req.query)
+      else if (req.method == 'POST')
+        params = ' body: ' + JSON.stringify(req.body)
+      //logger.error(req.originalUrl + params, err.stack);
+      console.warn('============================================')
+      console.warn('Url:', req.originalUrl)
+      console.warn('Params:', params)
+      console.warn('Stack:', err.stack)
+    }
+    res.status(status).send({ error: err, url: req.originalUrl })
+  } catch (error) {
+    console.error('handleError出错：', error)
+  }
+}
+
 exports.saveDataImage = (filePath, src) => {
   return new Promise((resolve, reject) => {
     let base64_string = src.replace(

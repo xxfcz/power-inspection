@@ -1,3 +1,5 @@
+const _ = require('lodash')
+
 function myP(val, t=500) {
   return new Promise(function(resolve, reject) {
     setTimeout(function() {
@@ -7,7 +9,7 @@ function myP(val, t=500) {
   })
 }
 
-var firstAsync = async function() {
+let firstAsync = async function() {
   try {
     var a = await myP('a', 1000)
     console.log('#1', a)
@@ -18,7 +20,7 @@ var firstAsync = async function() {
   }
 }
 
-var multipleAsync = async function() {
+let multipleAsync = async function() {
   try {
     var a = await myP('c')
     var b = await myP(0)
@@ -29,9 +31,23 @@ var multipleAsync = async function() {
   }
 }
 
-var couple = async ()=> {
+let couple = async ()=> {
   await firstAsync()
   await multipleAsync()  
 }
 
-couple()
+let test_lodash_forEach = async ()=>{
+  _.forEach(['a','b','c'], async (e,i)=> {
+    let r = await myP(e,2000-i*500)
+    console.log(`i=${i}, returns ${r}`)
+  })
+}
+
+let test_js_forEach = async ()=>{
+  ['a','b','c'].forEach(async (e,i)=> {
+    let r = await myP(e,2000-i*500)
+    console.log(`i=${i}, returns ${r}`)
+  })
+}
+
+test_js_forEach()

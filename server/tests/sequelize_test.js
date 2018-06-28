@@ -21,7 +21,7 @@ const dbFile = path.join(__dirname, '../db.json')
 const sequelize = require('../db')
 
 const Model = require('../models')
-let { Workshop, Section, Device, User } = Model
+let { Workshop, Section, Device, User, Inspect } = Model
 
 var initDb = async () => {
   try {
@@ -112,8 +112,9 @@ var run = async () => {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
     //await initDb()
+    await Inspect.sync()
 
-    await play()
+    //await play()
   } catch (err) {
     console.log('===============================================')
     console.error('play(): Error occurred:', err)
