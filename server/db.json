@@ -151,18 +151,40 @@
       "userId": 3
     }
   ],
+  "schedules": [
+    {
+      "id": 1,
+      "workshopId": 1,
+      "name": "计划A",
+      "type": "monthly",
+      "month": "2018.07"
+    },
+    {
+      "id": 2,
+      "workshopId": 1,
+      "name": "计划B",
+      "type": "temporary",
+      "month": "2018.07"
+    }
+  ],
   "schedule_items": [
     {
-      "workshopId": 1,
-      "date": "2018-7-10",
-      "groupId": 1,
+      "scheduleId": 1,
+      "date": "2018-07-10",
+      "userIds": [1, 2],
       "sectionId": 1
     },
     {
-      "workshopId": 1,
-      "date": "2018-7-10",
-      "groupId": 1,
+      "scheduleId": 1,
+      "date": "2018-07-10",
+      "userIds": [1, 2],
       "sectionId": 2
+    },
+    {
+      "scheduleId": 1,
+      "date": "2018-07-11",
+      "userIds": [1, 3],
+      "sectionId": 3
     }
   ],
   "inspects": [

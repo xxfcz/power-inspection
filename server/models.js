@@ -46,34 +46,36 @@ const Inspect = sequelize.define('inspect', {
   longitude: {type: Sequelize.DOUBLE},
 })
 
-const Group = sequelize.define('group',{
-  name: {type: Sequelize.STRING}
+const Schedule = sequelize.define('schedule', {
+  name: Sequelize.DataTypes.STRING,
+  month: Sequelize.DataTypes.STRING,
+  type: {
+    type: Sequelize.DataTypes.ENUM,
+    values: ['monthly', 'temporary']
+  }
 })
-
-const GroupUser = sequelize.define('group_user')
-
-User.belongsToMany(Group, {through: GroupUser})
-Group.belongsToMany(User, {through: GroupUser})
+Schedule.belongsTo(Workshop)
+Workshop.hasMany(Schedule)
 
 const ScheduleItem = sequelize.define('schedule_item', {
-  date: {type: Sequelize.DATE}
+  date: {type: Sequelize.DataTypes.DATEONLY},
+  userIds: Sequelize.DataTypes.JSONB, // [1,2,3]
 })
 
-ScheduleItem.belongsTo(Workshop)
-Workshop.hasMany(ScheduleItem)
-ScheduleItem.belongsTo(Group)
-Group.hasMany(ScheduleItem)
+ScheduleItem.belongsTo(Schedule)
+Schedule.hasMany(ScheduleItem)
+
 ScheduleItem.belongsTo(Section)
 Section.hasMany(ScheduleItem)
+
 
 module.exports = {
   Workshop: Workshop,
   Section: Section,
   Device: Device,
   User: User,
-  Group: Group,
-  GroupUser: GroupUser,
   Inspect: Inspect,
+  Schedule: Schedule,
   ScheduleItem: ScheduleItem
 }
 

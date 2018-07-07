@@ -8,19 +8,22 @@
         <router-link to="login" v-else>登录</router-link>
       </li>
       <li>
-        <router-link to="tasks">任务清单</router-link>
+        <router-link to="my-tasks">我的任务</router-link>
       </li>
       <li>
         <router-link to="inspect">巡检</router-link>
       </li>
       <li>
-        <router-link to="local_records">本地暂存的巡检记录</router-link>
+        <router-link to="local-records">本地暂存的巡检记录</router-link>
       </li>
       <li>
-        <router-link to="remote_records">服务器上的巡检记录</router-link>
+        <router-link to="remote-records">服务器上的巡检记录</router-link>
       </li>
       <li>
-        <router-link to="add_task">添加任务</router-link>
+        <router-link to="add-device">添加设备</router-link>
+      </li>
+      <li>
+        <router-link to="add-schedule">添加巡检计划</router-link>
       </li>
       <!-- <li>
         <button @click="clearCache">清理数据缓存</button>
@@ -29,10 +32,10 @@
         报表
         <ul>
           <li>
-            <router-link to="device_report">设备清单</router-link>
+            <router-link to="device-report">设备清单</router-link>
           </li>
           <li>
-            <router-link to="inspect_report">巡检记录</router-link>
+            <router-link to="inspect-report">巡检记录</router-link>
           </li>
           <li>
             <router-link to="fault_report">问题库</router-link>

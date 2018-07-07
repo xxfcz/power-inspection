@@ -1,4 +1,5 @@
 const path = require('path')
+const moment = require('moment')
 const _ = require('lodash')
 const fse = require('fs-extra')
 const Sequelize = require('sequelize')
@@ -21,7 +22,7 @@ const dbFile = path.join(__dirname, '../db.json')
 const sequelize = require('../db')
 
 const Model = require('../models')
-let {Workshop, Section, Device, User, Group, GroupUser, Inspect, ScheduleItem} = Model
+let {Workshop, Section, Device, User, Inspect, Schedule, ScheduleItem} = Model
 
 let initDb = async () => {
   try {
@@ -51,15 +52,21 @@ let initDb = async () => {
     maxid = await Device.max('id')
     await sequelize.query(`select setval('devices_id_seq', ${maxid})`)
 
-    // 添加用户分组
-    await Group.bulkCreate(data.groups)
-    maxid = await Group.max('id')
-    await sequelize.query(`select setval('groups_id_seq', ${maxid})`)
-
-    // 用户分配到组
-    await GroupUser.bulkCreate(data.group_users)
-
-    // 添加计划
+    await Schedule.bulkCreate(data.schedules)
+    // 添加今日计划项
+    data.schedule_items.forEach(e => {
+      e.date = moment().format('YYYY-MM-DD')
+    })
+    await ScheduleItem.bulkCreate(data.schedule_items)
+    // 添加昨日计划项
+    data.schedule_items.forEach(e => {
+      e.date = moment().subtract(1, 'day').format('YYYY-MM-DD')
+    })
+    await ScheduleItem.bulkCreate(data.schedule_items)
+    // 添加月底计划项
+    data.schedule_items.forEach(e => {
+      e.date = moment().add(1, 'day').format('YYYY-MM-DD')
+    })
     await ScheduleItem.bulkCreate(data.schedule_items)
 
   } catch (err) {
@@ -120,33 +127,26 @@ let play3 = async () => {
 }
 
 let play = async () => {
-  let list = await ScheduleItem.findAll({
-    include: [
-      {
-        model: Group,
-        where: {
-          id: 1
-        },
-        attributes: ['id', 'name']
+  let date = await ScheduleItem.min('date', {
+    where: {
+      date: {
+        [Op.gte]: moment().format('YYYY-MM-DD')
       },
-      {
-        model: Section,
-        attributes: ['id', 'name']
+      userIds:{
+        [Op.contains]: 1
       }
-    ]
+    }
   })
-  console.log(list.map(e => {
-    return e.get(PLAIN)
-  }))
+  console.log(date)
 }
 
 let run = async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    //await initDb({sync: true})
+    await initDb()
 
-    await play()
+    //await play()
   } catch (err) {
     console.log('===============================================')
     console.error('run(): Error occurred:', err)

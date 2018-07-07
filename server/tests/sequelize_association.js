@@ -1,5 +1,6 @@
-const Sequelize =require('sequelize')
-
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
+const PLAIN = {plain: true}
 const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
   host: 'localhost',
   dialect: 'postgres',
@@ -8,7 +9,8 @@ const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
 
 
 const Product = sequelize.define('product', {
-  title: Sequelize.STRING
+  title: Sequelize.STRING,
+  users: Sequelize.DataTypes.JSONB
 });
 const User = sequelize.define('user', {
   first_name: Sequelize.STRING,
@@ -34,13 +36,15 @@ const Tag = sequelize.define('tag', {
 Product.hasMany(Tag);
 
 
-let run = async ()=> {
+let run = async () => {
   try {
-    //await sequelize.sync({force: true})
+    /*
+    await sequelize.sync({force: true})
 
     await Product.create({
       id: 2,
       title: 'Table',
+      users: [1,2,3,10],
       tags: [
         { name: 'Alpha'},
         { name: 'Gama'}
@@ -48,11 +52,21 @@ let run = async ()=> {
     }, {
       include: [ Tag ]
     })
+    */
+
+    let p = await Product.find({
+      where: {
+        users: {
+          [Op.contains]: 2
+        }
+      }
+    })
+    console.log(p.get(PLAIN))
   }
-  catch(ex){
+  catch (ex) {
     console.error(ex)
   }
-  finally{
+  finally {
     process.exit(0)
   }
 }

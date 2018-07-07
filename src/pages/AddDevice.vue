@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>添加任务/设备</h1>
+    <h1>添加设备</h1>
     <div v-if="!onLine" style="color:red">您已离线，无法添加</div>
     <div>
       <label>设备名称：

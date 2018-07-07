@@ -60,12 +60,16 @@ export default {
         alert('您已离线，无法下载')
         return
       }
+      let url = `/api/schedules/user/${this.user.id}/todo`
       this.$axios
-        .get('/api/devices', {
-          params: { wid: this.user.workshopId }
-        })
+        .get(url)
         .then(resp => {
-          var tasks = resp.data
+          let date = resp.data.date
+          if(!date || date>this.$moment().format('YYYY-MM-DD')){
+            alert('今天没有任务！')
+            return
+          }
+          let tasks = resp.data.devices
           this.tasks = tasks
           this.lastUpdateTime = new Date()
           this.$db.tasks
