@@ -3,7 +3,7 @@ const _ = require('lodash')
 const fse = require('fs-extra')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-const PLAIN = { plain: true }
+const PLAIN = {plain: true}
 const dbFile = path.join(__dirname, '../db.json')
 
 // const sequelize = new Sequelize('powerins', 'postgres', 'postgres', {
@@ -21,11 +21,11 @@ const dbFile = path.join(__dirname, '../db.json')
 const sequelize = require('../db')
 
 const Model = require('../models')
-let { Workshop, Section, Device, User, Inspect } = Model
+let {Workshop, Section, Device, User, Group, GroupUser, Inspect, ScheduleItem} = Model
 
-var initDb = async () => {
+let initDb = async () => {
   try {
-    await sequelize.sync({ force: true })
+    await sequelize.sync({force: true})
     //await sequelize.getQueryInterface().bulkDelete('workshops')
     let data = await fse.readFile(dbFile)
     data = JSON.parse(data)
@@ -50,6 +50,18 @@ var initDb = async () => {
     await Device.bulkCreate(data.devices)
     maxid = await Device.max('id')
     await sequelize.query(`select setval('devices_id_seq', ${maxid})`)
+
+    // 添加用户分组
+    await Group.bulkCreate(data.groups)
+    maxid = await Group.max('id')
+    await sequelize.query(`select setval('groups_id_seq', ${maxid})`)
+
+    // 用户分配到组
+    await GroupUser.bulkCreate(data.group_users)
+
+    // 添加计划
+    await ScheduleItem.bulkCreate(data.schedule_items)
+
   } catch (err) {
     console.log('===============================================')
     console.error('initDb(): Error occurred:', err)
@@ -107,25 +119,45 @@ let play3 = async () => {
   )
 }
 
-var run = async () => {
+let play = async () => {
+  let list = await ScheduleItem.findAll({
+    include: [
+      {
+        model: Group,
+        where: {
+          id: 1
+        },
+        attributes: ['id', 'name']
+      },
+      {
+        model: Section,
+        attributes: ['id', 'name']
+      }
+    ]
+  })
+  console.log(list.map(e => {
+    return e.get(PLAIN)
+  }))
+}
+
+let run = async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    //await initDb()
-    await Inspect.sync()
+    //await initDb({sync: true})
 
-    //await play()
+    await play()
   } catch (err) {
     console.log('===============================================')
-    console.error('play(): Error occurred:', err)
+    console.error('run(): Error occurred:', err)
   } finally {
     process.exit(0)
   }
 }
 
-var test = async () => {
+let test = async () => {
   await sequelize.authenticate()
-  await User.sync({ force: true })
+  await User.sync({force: true})
 
   process.exit(0)
 }
