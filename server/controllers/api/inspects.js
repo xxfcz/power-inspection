@@ -69,40 +69,26 @@ router.post('/', (req, res, next) => {
   postInspect(req, res, next)
 })
 
-router.get('/', (req, res) => {
-  fs.readFile(dbFile, (err, data) => {
-    if (err) {
-      console.error(err)
-      res.status(500).send(err.message)
-    } else {
-      data = JSON.parse(data)
+router.get('/', async (req, res) => {
+  console.log(req.query)
+  let where = {}
+  if (req.query) {
+    let w = req.query.w
+    if (w) where.workshop = w
+    let d1 = req.query.d1
+    let d2 = req.query.d2
+  }
 
-      console.log(req.query)
-      let w = req.query.w
-      let d1 = req.query.d1
-      let d2 = req.query.d2
-      let _export = false
-      // 参数 _export
-      if (req.query._export) _export = req.query._export == 'true'
+  let _export = false
+  // 参数 _export
+  if (req.query._export) _export = req.query._export == 'true'
 
-      // 取巡检记录
-      let inspects = _.filter(data.inspects, t => {
-        let result = true
-        if (result && w) {
-          result = result && t.workshop == w
-        }
-        if (result && d1) {
-          result = result && t.createTime.substring(0, 10) >= d1
-        }
-        if (result && d2) {
-          result = result && t.createTime.substring(0, 10) <= d2
-        }
-        return result
-      })
-      if (_export) require('../xutils').exportXlsx(res, inspects, '巡检记录')
-      else res.send(inspects)
-    }
+  // 取巡检记录
+  let inspects = await Inspect.findAll({
+    where
   })
+  if (_export) require('../xutils').exportXlsx(res, inspects, '巡检记录')
+  else res.send(inspects)
 })
 
 module.exports = router

@@ -202,7 +202,7 @@ export default {
           longitude: this.longitude,
           latitude: this.latitude,
           user: this.user.name,
-          createdAt: new Date()
+          time: new Date()
         })
         .then(e => {
           alert('保存成功！')

@@ -19,13 +19,21 @@
         <input type="date" v-model="endDate">
       </label>
     </div>
+    <div>状态：
+        <label>
+          <input type="radio" v-model="normality" value="normal">正常
+        </label>
+        <label>
+          <input type="radio" v-model="normality" value="abnormal">异常
+        </label>
+    </div>
     <div style="text-align:center;margin-top: 12px">
       <button @click="onQuery">查询</button>
       <button @click="onExport">导出</button>
     </div>
     <!-- 结果网格 -->
     <div style="overflow-x: scroll">
-      <table style="width: 560px;">
+      <table style="min-width: 560px;">
         <thead>
           <tr>
             <th>区段</th>
@@ -60,8 +68,8 @@ export default {
       startDate: this.$moment()
         .subtract(7, 'days')
         .format('YYYY-MM-DD'),
-      endDate: this.$moment()
-        .format('YYYY-MM-DD'),
+      endDate: this.$moment().format('YYYY-MM-DD'),
+      normality: 'abnormal',
       inspects: []
     }
   },
@@ -81,7 +89,8 @@ export default {
           params: {
             w: this.selectedWorkshop.name,
             d1: this.startDate,
-            d2: this.endDate
+            d2: this.endDate,
+            n: this.normality
           }
         })
         .then(r => {
@@ -89,7 +98,9 @@ export default {
         })
     },
     onExport() {
-      let url = `/api/inspects?w=${this.selectedWorkshop.name}&d1=${this.startDate}&d2=${this.endDate}&_export=true`
+      let url = `/api/inspects?w=${this.selectedWorkshop.name}&d1=${
+        this.startDate
+      }&d2=${this.endDate}&_export=true`
       window.open(url, '_blank')
     }
   }

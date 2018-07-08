@@ -19,7 +19,7 @@
       </dl>
       <dl>
         <dt>巡检时间：</dt>
-        <dd>{{item.r.createTime | datetime}}</dd>
+        <dd>{{item.r.time | datetime}}</dd>
       </dl>
       <dl>
         <dt>巡检位置：</dt>

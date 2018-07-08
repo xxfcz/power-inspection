@@ -19,13 +19,14 @@
       <li>
         <router-link to="remote-records">服务器上的巡检记录</router-link>
       </li>
+      <!--
       <li>
         <router-link to="add-device">添加设备</router-link>
       </li>
       <li>
         <router-link to="add-schedule">添加巡检计划</router-link>
       </li>
-      <!-- <li>
+      <li>
         <button @click="clearCache">清理数据缓存</button>
       </li> -->
       <li>
@@ -37,9 +38,9 @@
           <li>
             <router-link to="inspect-report">巡检记录</router-link>
           </li>
-          <li>
-            <router-link to="fault_report">问题库</router-link>
-          </li>
+          <!-- <li>
+            <router-link to="fault-report">问题库</router-link>
+          </li> -->
         </ul>
       </li>
 
@@ -58,7 +59,7 @@ li {
 export default {
   data() {
     return {
-      user: ''
+      user: {}
     }
   },
   mounted() {
@@ -69,7 +70,7 @@ export default {
       let user = this.getUser()
       if (user != null) {
         this.user = user
-      } else this.user = ''
+      } else this.user = null
     },
     getUser() {
       return JSON.parse(localStorage.getItem('user'))

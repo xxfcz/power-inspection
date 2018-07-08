@@ -48,6 +48,7 @@ const Inspect = sequelize.define('inspect', {
   images: {type: Sequelize.JSON},
   latitude: {type: Sequelize.DOUBLE},
   longitude: {type: Sequelize.DOUBLE},
+  time: Sequelize.DATE
 })
 
 const Schedule = sequelize.define('schedule', {

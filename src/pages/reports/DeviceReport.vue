@@ -15,7 +15,7 @@
     </div>
     <!-- 结果网格 -->
     <div style="overflow-x: scroll">
-      <table style="width: 480px;">
+      <table style="min-width: 480px;">
         <thead>
           <tr>
             <th>ID</th>

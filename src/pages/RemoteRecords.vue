@@ -10,7 +10,7 @@
       </dl>
       <dl>
         <dt>巡检时间：</dt>
-        <dd>{{ r.createTime | datetime }}</dd>
+        <dd>{{ r.time | datetime }}</dd>
       </dl>
       <dl>
         <dt>巡检位置：</dt>
