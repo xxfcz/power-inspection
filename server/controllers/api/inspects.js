@@ -1,14 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const path = require('path')
-const fs = require('fs')
 const _ = require('lodash')
-const sequelize = require('../../db')
+const moment = require('moment')
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
+
 const Model = require('../../models')
 let { Workshop, Section, Device, User, Inspect } = Model
-
 const xutils = require('../../xutils')
-const dbFile = path.join(__dirname, '../../db.json')
 
 // 保存照片到文件系统
 async function saveImages(images) {
@@ -75,8 +75,18 @@ router.get('/', async (req, res) => {
   if (req.query) {
     let w = req.query.w
     if (w) where.workshop = w
+    let n = req.query.n
+    if (n) where.deviceStatus = n
     let d1 = req.query.d1
     let d2 = req.query.d2
+    if (d1 && d2) {
+      where.time = {
+        [Op.gte]: moment(d1).toDate(),
+        [Op.lte]: moment(d2)
+          .add(1, 'day')
+          .toDate()
+      }
+    }
   }
 
   let _export = false

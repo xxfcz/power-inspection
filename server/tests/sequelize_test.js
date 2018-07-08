@@ -127,26 +127,27 @@ let play3 = async () => {
 }
 
 let play = async () => {
-  let date = await ScheduleItem.min('date', {
+  let r = await Inspect.findOne({
     where: {
-      date: {
-        [Op.gte]: moment().format('YYYY-MM-DD')
-      },
-      userIds:{
-        [Op.contains]: 1
+      time: {
+        [Op.gte]: moment('2018-07-08').toDate(),
+        [Op.lte]: moment('2018-07-09').add(1, 'day').toDate()
       }
     }
   })
-  console.log(date)
+  if(r)
+    console.log(r.get(PLAIN))
+  else
+    console.warn('No result')
 }
 
 let run = async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    await initDb()
+    //await initDb()
 
-    //await play()
+    await play()
   } catch (err) {
     console.log('===============================================')
     console.error('run(): Error occurred:', err)
