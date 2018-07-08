@@ -2,18 +2,22 @@
   "workshops": [
     {
       "id": 1,
-      "name": "衡阳供电车间"
+      "name": "衡阳供电段"
     },
     {
       "id": 2,
-      "name": "耒阳供电车间"
+      "name": "衡阳供电车间"
     },
     {
       "id": 3,
-      "name": "郴州供电车间"
+      "name": "耒阳供电车间"
     },
     {
       "id": 4,
+      "name": "郴州供电车间"
+    },
+    {
+      "id": 5,
       "name": "西渡供电车间"
     }
   ],
@@ -21,62 +25,79 @@
     {
       "id": 1,
       "name": "衡阳至周家坳自闭",
-      "workshopId": 1
+      "workshopId": 2
     },
     {
       "id": 2,
       "name": "衡阳至周家坳贯通",
-      "workshopId": 1
+      "workshopId": 2
     },
     {
       "id": 3,
       "name": "周家坳至东阳渡自闭",
-      "workshopId": 1
+      "workshopId": 2
     },
     {
       "id": 4,
       "name": "周家坳至东阳渡贯通",
-      "workshopId": 1
+      "workshopId": 2
     },
     {
       "id": 5,
       "name": "东阳渡至向阳桥自闭",
-      "workshopId": 1
+      "workshopId": 2
     },
     {
       "id": 6,
       "name": "东阳渡至向阳桥贯通",
-      "workshopId": 1
+      "workshopId": 2
     },
     {
       "id": 7,
       "name": "哲桥至耒阳自闭",
-      "workshopId": 2
+      "workshopId": 3
     },
     {
       "id": 8,
       "name": "哲桥至耒阳贯通",
-      "workshopId": 2
+      "workshopId": 3
     }
   ],
   "users": [
     {
       "id": 1,
       "name": "张三",
-      "workshopId": 1,
-      "password": "123456"
+      "workshopId": 2,
+      "password": "123456",
+      "role": "re"
     },
     {
       "name": "李四",
       "id": 2,
       "workshopId": 2,
-      "password": "123456"
+      "password": "123456",
+      "role": "ws"
     },
     {
+      "name": "王五",
       "id": 3,
+      "workshopId": 3,
+      "password": "123456",
+      "role": "ws"
+    },
+    {
+      "id": 4,
       "name": "肖雪峰",
-      "workshopId": 4,
-      "password": "123456"
+      "workshopId": 5,
+      "password": "123456",
+      "role": "sa"
+    },
+    {
+      "id": 5,
+      "name": "HH",
+      "workshopId": 1,
+      "password": "123456",
+      "role": "hq"
     }
   ],
   "devices": [
@@ -154,14 +175,14 @@
   "schedules": [
     {
       "id": 1,
-      "workshopId": 1,
+      "workshopId": 2,
       "name": "计划A",
       "type": "monthly",
       "month": "2018.07"
     },
     {
       "id": 2,
-      "workshopId": 1,
+      "workshopId": 2,
       "name": "计划B",
       "type": "temporary",
       "month": "2018.07"

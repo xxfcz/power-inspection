@@ -21,6 +21,10 @@ const User = sequelize.define('user', {
   },
   password: {
     type: Sequelize.STRING
+  },
+  role: {
+    // sa, 段管理人员, 车间管理人员, 普通职工
+    type: Sequelize.ENUM('sa', 'hq', 'ws', 're')
   }
 })
 User.belongsTo(Workshop)
