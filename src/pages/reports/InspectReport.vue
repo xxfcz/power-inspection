@@ -20,12 +20,12 @@
       </label>
     </div>
     <div>状态：
-        <label>
-          <input type="radio" v-model="normality" value="normal">正常
-        </label>
-        <label>
-          <input type="radio" v-model="normality" value="abnormal">异常
-        </label>
+      <label>
+        <input type="radio" v-model="normality" value="normal">正常
+      </label>
+      <label>
+        <input type="radio" v-model="normality" value="abnormal">异常
+      </label>
     </div>
     <div style="text-align:center;margin-top: 12px">
       <button @click="onQuery">查询</button>
@@ -45,7 +45,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="i in inspects">
+          <tr v-for="i in inspects" @click="selectedInspect=i" :class="{selected: selectedInspect===i}">
             <td>{{i.section}}</td>
             <td>{{i.device}}</td>
             <td>{{i.deviceStatus}}</td>
@@ -56,8 +56,29 @@
         </tbody>
       </table>
     </div>
+    <div v-if="selectedInspect" style="border-top: 1px solid blue">
+      <div>巡检照片</div>
+      <div>
+        <div style="float:left;width:33%" v-for="i in selectedInspect.images">
+          <img style="width:100%;" :src="i.url" @click="selectedImage=i">
+        </div>
+      </div>
+    </div>
+
+    <!-- 大照片 -->
+    <div v-if="selectedImage" style="position: fixed; left:0; top:0; right:0;bottom:0; background-color: gray; overflow:scroll">
+      <img :src="selectedImage.url" style="width:100%" @click="selectedImage=null">
+    </div>
   </div>
 </template>
+
+<style>
+.selected {
+  color: white;
+  background-color: blue;
+}
+</style>
+
 
 <script>
 export default {
@@ -70,7 +91,9 @@ export default {
         .format('YYYY-MM-DD'),
       endDate: this.$moment().format('YYYY-MM-DD'),
       normality: 'abnormal',
-      inspects: []
+      inspects: [],
+      selectedInspect: null,
+      selectedImage: null
     }
   },
   mounted() {
@@ -79,7 +102,12 @@ export default {
   methods: {
     loadWorkshops() {
       this.$axios.get('/api/workshops').then(r => {
-        this.workshops = r.data
+        this.workshops = r.data.filter(e => {
+          return e.id > 1
+        })
+        if (this.workshops.length > 0) {
+          this.selectedWorkshop = this.workshops[0]
+        }
       })
     },
 

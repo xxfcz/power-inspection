@@ -58,7 +58,6 @@ dt {
 
 
 <script>
-import _ from 'lodash'
 import config from '../../config'
 
 const MAX_BODY_SIZE = process.env.NODE_ENV === 'production' ? config.build.max_body_size : config.dev.max_body_size
@@ -84,7 +83,7 @@ export default {
         array.sort((a, b) => {
           return b.createTime - a.createTime
         })
-        this.items = _.map(array, e=>{
+        this.items = array.map(e=>{
           return {
             r: e,
             percent: 0

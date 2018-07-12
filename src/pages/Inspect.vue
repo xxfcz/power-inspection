@@ -69,7 +69,6 @@ option:disabled {
 
 <script>
 import utils from '@/utils'
-import _ from 'lodash'
 
 const DIST_LIMIT = 500 // 不显示距离超过500米的设备
 
@@ -151,7 +150,7 @@ export default {
     fileChanged(e) {
       var files = e.target.files || e.dataTransfer.files
       if (!files.length) return
-      _.forEach(files, f => {
+      this.$_.forEach(files, f => {
         this.createImage(f).then(data => {
           /*
             {
