@@ -1,7 +1,9 @@
 <template>
   <div>
-    <div>当前用户：{{ user.name || '请登录' }}</div>
-    <div style="margin-left: 2em" v-if="user">{{user.workshopName}}</div>
+    <div v-if="user">
+      <div>当前用户：{{ user.name || '请登录' }}</div>
+      <div style="margin-left: 2em" >{{user.workshopName}}</div>
+    </div>
     <ul>
       <li>
         <button @click="logout" v-if="user">注销</button>
@@ -59,7 +61,7 @@ li {
 export default {
   data() {
     return {
-      user: {}
+      user: null
     }
   },
   mounted() {
@@ -68,9 +70,7 @@ export default {
   methods: {
     initUser() {
       let user = this.getUser()
-      if (user != null) {
-        this.user = user
-      } else this.user = null
+      this.user = user
     },
     getUser() {
       return JSON.parse(localStorage.getItem('user'))
