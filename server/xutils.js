@@ -60,3 +60,41 @@ exports.exportXlsx = (res, data, sheetName = 'Sheet') => {
     }
   })
 }
+
+
+// 保存照片到文件系统
+exports.saveImages = async function (images, subDir = '') {
+  let savePs = []
+  _.forEach(images, async img => {
+    let imgData = img.data
+    delete img.data // 重要：从记录中删除图片数据，图片将保存为文件
+    let ext = path.extname(img.name)
+    let basename = path.basename(img.name, ext)
+    let timestamp = new Date().getTime()
+    let rand = parseInt(Math.random() * 1000000)
+    let fileName = `${basename}_${timestamp}_${rand}${ext}`
+    let fileUrl = path.join('/upload', subDir, fileName)
+    let savePath = path.join(__dirname, './upload', subDir, fileName)
+    savePs.push(
+      xutils
+        .saveDataImage(savePath, imgData)
+        .then(() => {
+          console.log('OK saving ' + savePath)
+          img.url = fileUrl
+        })
+        .catch(err => {
+          console.error('Error saving ' + savePath)
+          console.error(err)
+          throw err
+        })
+    )
+  })
+  try {
+    await Promise.all(savePs)
+    console.info('本记录中的照片全都保存成功！')
+    return true
+  } catch (err) {
+    console.error(r)
+    return false
+  }
+}

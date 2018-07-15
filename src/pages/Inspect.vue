@@ -55,7 +55,7 @@
   </div>
 </template>
 
-<style>
+<style scoped>
 .section {
   margin-top: 18px;
   padding-top: 6px;
@@ -148,10 +148,10 @@ export default {
         })
     },
     fileChanged(e) {
-      var files = e.target.files || e.dataTransfer.files
+      let files = e.target.files || e.dataTransfer.files
       if (!files.length) return
       this.$_.forEach(files, f => {
-        this.createImage(f).then(data => {
+        this.$utils.readImage(f).then(data => {
           /*
             {
               lastModified,

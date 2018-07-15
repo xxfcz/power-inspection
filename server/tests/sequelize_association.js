@@ -8,60 +8,26 @@ const sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
 })
 
 
-const Product = sequelize.define('product', {
-  title: Sequelize.STRING,
-  users: Sequelize.DataTypes.JSONB
-});
-const User = sequelize.define('user', {
-  first_name: Sequelize.STRING,
-  last_name: Sequelize.STRING
-});
-const Address = sequelize.define('address', {
-  type: Sequelize.STRING,
-  line_1: Sequelize.STRING,
-  line_2: Sequelize.STRING,
-  city: Sequelize.STRING,
-  state: Sequelize.STRING,
-  zip: Sequelize.STRING,
+const Player = sequelize.define('player', {/* attributes */});
+const Team  = sequelize.define('team', {/* attributes */});
+
+Player.belongsTo(Team);
+
+const User = sequelize.define('user', {/* attributes */}, {underscored: true})
+const Company  = sequelize.define('company', {
+  uuid: {
+    type: Sequelize.UUID,
+    primaryKey: true
+  }
 });
 
-Product.User = Product.belongsTo(User);
-User.Addresses = User.hasMany(Address);
-
-
-const Tag = sequelize.define('tag', {
-  name: Sequelize.STRING
-});
-
-Product.hasMany(Tag);
-
+User.belongsTo(Company); // Will add company_uuid to user
 
 let run = async () => {
   try {
-    /*
+
     await sequelize.sync({force: true})
 
-    await Product.create({
-      id: 2,
-      title: 'Table',
-      users: [1,2,3,10],
-      tags: [
-        { name: 'Alpha'},
-        { name: 'Gama'}
-      ]
-    }, {
-      include: [ Tag ]
-    })
-    */
-
-    let p = await Product.find({
-      where: {
-        users: {
-          [Op.contains]: 2
-        }
-      }
-    })
-    console.log(p.get(PLAIN))
   }
   catch (ex) {
     console.error(ex)

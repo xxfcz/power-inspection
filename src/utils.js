@@ -57,6 +57,19 @@ function getCurrentPosition(){
   })
 }
 
+function readImage(file) {
+  return new Promise((resolve, reject) => {
+    let reader = new FileReader()
+    reader.onload = e => {
+      resolve(e.target.result)
+    }
+    reader.onerror = e =>{
+      reject(e)
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
 export default {
   /**
  * caculate the distance
@@ -66,5 +79,6 @@ export default {
  * @param {Object} lng2
  */
   calcDistance: calcGreatCircleDistance,
-  getCurrentPosition: getCurrentPosition
+  getCurrentPosition: getCurrentPosition,
+  readImage: readImage
 }

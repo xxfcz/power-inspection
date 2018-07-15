@@ -32,7 +32,7 @@
       <button @click="onExport">导出</button>
     </div>
     <!-- 结果网格 -->
-    <div style="overflow-x: scroll">
+    <div style="overflow-x: scroll" class="section">
       <table style="min-width: 560px;">
         <thead>
           <tr>
@@ -56,7 +56,7 @@
         </tbody>
       </table>
     </div>
-    <div v-if="selectedInspect" style="border-top: 1px solid blue">
+    <div v-if="selectedInspect" class="section">
       <div>巡检照片</div>
       <div>
         <div style="float:left;width:33%" v-for="i in selectedInspect.images">
@@ -69,13 +69,42 @@
     <div v-if="selectedImage" style="position: fixed; left:0; top:0; right:0;bottom:0; background-color: gray; overflow:scroll">
       <img :src="selectedImage.url" style="width:100%" @click="selectedImage=null">
     </div>
+
+    <!-- 销号申请 -->
+    <div style="clear:both" class="section" v-if="disposal.can">
+      <button @click="disposal.visible=!disposal.visible">销号
+        <span v-if="disposal.visible">▲</span>
+        <span v-else="disposal.visible">▼</span>
+      </button>
+      <div v-if="disposal.visible">
+        <label>选择照片：
+          <input type="file" accept="image/*" multiple @change="fileChanged">
+        </label>
+        <div v-for="i in disposal.images" style="text-align:center">
+          <img :src="i.data" style="max-width: 60%; max-height:160px">
+          <div style="position:relative">
+            <div style="float:left">{{ i.size | bytes() }}</div>
+            <div style="margin-left: 120px; text-align:right">拍摄于 {{new Date(i.lastModified) | moment().format('YYYY-MM-DD hh:mm')}}</div>
+          </div>
+        </div>
+        <div>
+          <button @click="onRequestDisposal">申请销号</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
-<style>
+<style scoped>
 .selected {
   color: white;
   background-color: blue;
+}
+.section {
+  border-top: 1px solid blue;
+  /* border-bottom: 1px solid blue; */
+  margin: 16px 0 16px;
+  padding-top: 8px;
 }
 </style>
 
@@ -93,7 +122,13 @@ export default {
       normality: 'abnormal',
       inspects: [],
       selectedInspect: null,
-      selectedImage: null
+      selectedImage: null,
+      // 销号相关
+      disposal: {
+        can: true,
+        visible: false,
+        images: []
+      }
     }
   },
   mounted() {
@@ -130,6 +165,37 @@ export default {
         this.startDate
       }&d2=${this.endDate}&_export=true`
       window.open(url, '_blank')
+    },
+    fileChanged(e) {
+      let files = e.target.files || e.dataTransfer.files
+      if (!files.length) return
+      this.$_.forEach(files, f => {
+        this.$utils.readImage(f).then(data => {
+          this.disposal.images.push({
+            name: f.name,
+            size: f.size,
+            lastModified: f.lastModified,
+            type: f.type,
+            data: data // Base64
+          })
+        })
+      })
+    },
+    onRequestDisposal() {
+      let user = JSON.parse(localStorage.getItem('user'))
+      this.$axios.post('/api/disposals', {
+        params: {
+          status: 'requested',
+          inspectId: this.selectedInspect.id,
+          requestUserId: user.id,
+          images: []
+        }
+      }).then(r => {
+        console.info(r)
+      }).catch(ex => {
+        alert(ex.message)
+      })
+
     }
   }
 }

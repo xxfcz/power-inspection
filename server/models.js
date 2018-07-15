@@ -73,6 +73,20 @@ Schedule.hasMany(ScheduleItem)
 ScheduleItem.belongsTo(Section)
 Section.hasMany(ScheduleItem)
 
+const Disposal = sequelize.define('disposal', {
+  status: {type: Sequelize.ENUM, values: ['requested', 'approved', 'rejected']},
+  requestTime: Sequelize.DATE,
+  images: Sequelize.ARRAY(Sequelize.STRING),
+  replyDate: Sequelize.DATE,
+  rejectReason: Sequelize.STRING,
+})
+
+Disposal.belongsTo(Inspect)
+Disposal.belongsTo(User, {as: 'requestUser'})
+User.hasMany(Disposal, {as: 'DisposalRequests', foreignKey: 'requestUserId', targetKey: 'id'})
+Disposal.belongsTo(User, {as: 'replyUser'})
+User.hasMany(Disposal, {as: 'DisposalReplies', foreignKey: 'replyUserId', sourceKey: 'id'})
+
 
 module.exports = {
   Workshop: Workshop,
@@ -81,6 +95,7 @@ module.exports = {
   User: User,
   Inspect: Inspect,
   Schedule: Schedule,
-  ScheduleItem: ScheduleItem
+  ScheduleItem: ScheduleItem,
+  Disposal: Disposal
 }
 
