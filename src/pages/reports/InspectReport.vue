@@ -88,7 +88,7 @@
           </div>
         </div>
         <div>
-          <button @click="onRequestDisposal">申请销号</button>
+          <button @click="onRequestDisposal($event)">申请销号</button>
         </div>
       </div>
     </div>
@@ -127,7 +127,8 @@ export default {
       disposal: {
         can: true,
         visible: false,
-        images: []
+        images: [],
+        files: []
       }
     }
   },
@@ -170,6 +171,7 @@ export default {
       let files = e.target.files || e.dataTransfer.files
       if (!files.length) return
       this.$_.forEach(files, f => {
+        this.disposal.files.push(f)
         this.$utils.readImage(f).then(data => {
           this.disposal.images.push({
             name: f.name,
@@ -181,21 +183,37 @@ export default {
         })
       })
     },
-    onRequestDisposal() {
+    onRequestDisposal(event) {
+      event.preventDefault()
       let user = JSON.parse(localStorage.getItem('user'))
-      this.$axios.post('/api/disposals', {
-        params: {
-          status: 'requested',
-          inspectId: this.selectedInspect.id,
-          requestUserId: user.id,
-          images: []
-        }
-      }).then(r => {
-        console.info(r)
-      }).catch(ex => {
-        alert(ex.message)
+      let iid = this.selectedInspect.id
+      let url = `/api/disposals/request/${iid}/${user.id}`
+      let formData = new FormData()
+      this.disposal.files.forEach((f,i) => {
+        formData.append('file' + i, f)
       })
+      
+      let config = {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
 
+      this.$axios
+        .post(url, formData, config)
+        .then(function(res) {
+          if (res.status === 200) {
+            this.disposal.files = []
+            this.disposal.images = []
+            this.disposal.can = false
+            alert('提交成功！')
+          } else {
+            throw '提交失败'
+          }
+        })
+        .catch(ex => {
+          alert(ex.message)
+        })
     }
   }
 }
