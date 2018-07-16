@@ -40,6 +40,9 @@
           <li>
             <router-link to="inspect-report">巡检记录</router-link>
           </li>
+          <li>
+            <router-link to="disposal-report">销号记录</router-link>
+          </li>
           <!-- <li>
             <router-link to="fault-report">问题库</router-link>
           </li> -->

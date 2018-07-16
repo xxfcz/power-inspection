@@ -9,6 +9,7 @@ import AddDevice from '@/pages/AddDevice'
 import Login from '@/pages/Login'
 import DeviceReport from '@/pages/reports/DeviceReport'
 import InspectReport from '@/pages/reports/InspectReport'
+import DisposalReport from '@/pages/reports/DisposalReport'
 import AddSchedule from '@/pages/AddSchedule.vue'
 
 Vue.use(Router)
@@ -64,6 +65,11 @@ export default new Router({
       path: '/inspect-report',
       name: 'inspect-report',
       component: InspectReport
+    },
+    {
+      path: '/disposal-report',
+      name: 'disposal-report',
+      component: DisposalReport
     }
   ]
 })

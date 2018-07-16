@@ -15,16 +15,15 @@ const xutils = require('../../xutils')
 const MAX_BODY_SIZE = config.max_body_size
 
 router.get('/', async (req, res) => {
+  let w = req.query.w
   let where = {}
   if (req.query) {
-    let w = req.query.w
-    if (w) where.workshop = w
-    let n = req.query.n
-    if (n) where.deviceStatus = n
+    let s = req.query.s
+    if (s) where.status = s
     let d1 = req.query.d1
     let d2 = req.query.d2
     if (d1 && d2) {
-      where.time = {
+      where.requestTime = {
         [Op.gte]: moment(d1).toDate(),
         [Op.lte]: moment(d2)
           .add(1, 'day')
@@ -39,8 +38,18 @@ router.get('/', async (req, res) => {
 
   // 取结果记录
   let resultSet = await Disposal.findAll({
+    include:[
+      {
+        model: Workshop,
+        where: {
+          id: w
+        }
+      },
+      Inspect
+    ],
     where
   })
+
   if (_export) require('../xutils').exportXlsx(res, resultSet, '销号记录')
   else res.send(resultSet)
 })

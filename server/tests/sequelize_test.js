@@ -22,7 +22,7 @@ const dbFile = path.join(__dirname, '../db.json')
 const sequelize = require('../db')
 
 const Model = require('../models')
-let {Workshop, Section, Device, User, Inspect, Schedule, ScheduleItem} = Model
+let {Workshop, Section, Device, User, Inspect, Schedule, ScheduleItem, Disposal} = Model
 
 let initDb = async () => {
   try {
@@ -126,7 +126,7 @@ let play3 = async () => {
   )
 }
 
-let play = async () => {
+let play4 = async () => {
   let r = await Inspect.findOne({
     where: {
       time: {
@@ -141,13 +141,37 @@ let play = async () => {
     console.warn('No result')
 }
 
+let play5 = async () => {
+  let r = await Disposal.findOne({
+    include:[
+      {
+        model: Workshop,
+        where: {
+          id: 1
+        }
+      },
+      Inspect
+    ],
+    where: {
+      requestTime: {
+        [Op.gte]: moment('2018-07-15').toDate(),
+        [Op.lte]: moment('2018-07-16').add(1, 'day').toDate()
+      }
+    }
+  })
+  if(r)
+    console.log(r.get(PLAIN))
+  else
+    console.warn('No result')
+}
+
 let run = async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    await initDb()
+    //await initDb()
 
-    //await play()
+    await play5()
   } catch (err) {
     console.log('===============================================')
     console.error('run(): Error occurred:', err)

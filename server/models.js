@@ -81,6 +81,7 @@ const Disposal = sequelize.define('disposal', {
   rejectReason: Sequelize.STRING,
 })
 
+Disposal.belongsTo(Workshop)
 Disposal.belongsTo(Inspect)
 Disposal.belongsTo(User, {as: 'requestUser'})
 User.hasMany(Disposal, {as: 'DisposalRequests', foreignKey: 'requestUserId', targetKey: 'id'})
