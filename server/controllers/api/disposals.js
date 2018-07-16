@@ -1,14 +1,18 @@
 const express = require('express')
 const router = express.Router()
 const path = require('path')
+const formidable = require('formidable')
 const _ = require('lodash')
 const moment = require('moment')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
+const config = require('../../config')
 const Model = require('../../models')
 let { Workshop, Section, Device, User, Inspect, Disposal } = Model
 const xutils = require('../../xutils')
+
+const MAX_BODY_SIZE = config.max_body_size
 
 router.get('/', async (req, res) => {
   let where = {}
@@ -41,12 +45,42 @@ router.get('/', async (req, res) => {
   else res.send(resultSet)
 })
 
-router.post('/', (req, res) => {
-  await Disposal.findOrCreate({
-    status: 'requested',
-    requestTime: new Date(),
-    inspectId: 1
+router.post('/request/:inspectId/:userId', async (req, res) => {
+  var form = new formidable.IncomingForm()
+  form.uploadDir = path.join(__dirname, '../../upload')
+  form.keepExtensions = true
+  form.maxFileSize = MAX_BODY_SIZE
+  form.parse(req, async function(err, fields, files) {
+    let images = _.map(files, e => {
+      // return {
+      //   url: e.path.replace(form.uploadDir, '/upload'),
+      //   name: e.name,
+      //   type: e.type,
+      //   size: e.size,
+      //   lastModified: e.lastModified
+      // }
+      return e.path.replace(form.uploadDir, '/upload')
+    })
+
+    let obj = {
+      status: 'requested',
+      inspectId: req.params.inspectId,
+      requestUserId: req.params.userId
+    }
+    let r = await Disposal.findOrCreate({
+      where: obj,
+      defaults: {
+        requestTime: new Date(),
+        images: images
+      }
+    })
+    res.send(r[0])
   })
+})
+
+router.get('/:id', async (req, res) => {
+  let r = await Disposal.findById(req.params.id)
+  res.send(r)
 })
 
 module.exports = router

@@ -5,6 +5,7 @@ const workshops = require('./controllers/api/workshops')
 const schedules = require('./controllers/api/shcedules')
 const disposals = require('./controllers/api/disposals')
 const tests = require('./controllers/tests')
+const upload = require('./controllers/upload')
 
 function registerRoutes(app) {
   app.use('/api/users', users)
@@ -14,6 +15,7 @@ function registerRoutes(app) {
   app.use('/api/schedules', schedules)
   app.use('/api/disposals', disposals)
 
+  app.use('/upload', upload)
   app.use('/tests', tests)
 }
 

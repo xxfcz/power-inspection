@@ -173,7 +173,6 @@ export default {
     },
     createImage(file) {
       return new Promise((resolve, reject) => {
-        let image = new Image()
         let reader = new FileReader()
         reader.onload = e => {
           resolve(e.target.result)

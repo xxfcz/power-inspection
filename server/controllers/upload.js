@@ -1,15 +1,19 @@
 const express = require('express')
 const router = express.Router()
+const formidable = require('formidable')
+const path = require('path')
+const _ = require('lodash')
 
 // 文件上传
 router.post('/', (req, res) => {
   var form = new formidable.IncomingForm()
   form.uploadDir = path.join(__dirname, '../upload')
-  console.log(form.uploadDir)
+  //console.log(form.uploadDir)
   form.keepExtensions = true
   form.maxFileSize = 20 * 1024 * 1024
 
   form.parse(req, function(err, fields, files) {
+    console.log(fields)
     res.send(
       _.map(files, e => {
         return {
