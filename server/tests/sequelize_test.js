@@ -165,6 +165,12 @@ let play5 = async () => {
     console.warn('No result')
 }
 
+let play5 = async ()=> {
+  let r = await Disposal.findOne({
+    id: 1
+  })
+}
+
 let run = async () => {
   try {
     await sequelize.authenticate()

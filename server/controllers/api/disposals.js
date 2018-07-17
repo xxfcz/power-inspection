@@ -87,6 +87,27 @@ router.post('/request/:inspectId/:userId', async (req, res) => {
   })
 })
 
+/**
+ * 同意销号
+ */
+router.post('/:id/approved/by/:uid', async (req, res)=>{
+  let id = parseInt(req.params.id)
+  let r = await Disposal.findById(id)
+  if(!r) {
+    res.status(500).send(`未找到指定的销号记录：${id}`)
+    return
+  }
+  if(r.status != 'requested') {
+    res.status(500).send(`指定的销号记录已被处理：${id}`)
+    return    
+  }
+  await Disposal.update(r.data)
+
+  res.send({
+    ok: true
+  })
+})
+
 router.get('/:id', async (req, res) => {
   let r = await Disposal.findById(req.params.id)
   res.send(r)

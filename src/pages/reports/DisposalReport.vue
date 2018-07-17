@@ -70,11 +70,11 @@
 
     <!-- 大照片 -->
     <div v-if="selectedImage" style="position: fixed; left:0; top:0; right:0;bottom:0; background-color: gray; overflow:scroll">
-      <img :src="selectedImage.url" style="width:100%" @click="selectedImage=null">
+      <img :src="selectedImage" style="width:100%" @click="selectedImage=null">
     </div>
 
     <!-- 销号处理 -->
-    <div class="section" style="clear: both; text-align:center">
+    <div class="section" style="clear: both; text-align:center" v-if="selectedDisposal && selectedDisposal.status == 'requested'">
       <button>审核通过</button>&nbsp;<button>审核不通过</button>
     </div>
   </div>
