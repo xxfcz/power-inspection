@@ -135,7 +135,7 @@ router.post('/request/:inspectId/:userId', async (req, res) => {
 })
 
 /**
- * 同意销号（审核通过）
+ * 同意销号（审核通过）/拒绝销号
  */
 router.post('/:id/:act/by/:uid', async (req, res) => {
   let id = parseInt(req.params.id)
@@ -144,12 +144,12 @@ router.post('/:id/:act/by/:uid', async (req, res) => {
   if (act != 'approved' && act != 'rejected') {
     res.send({
       ok: false,
-      msg: `URL含有非法参数：${act}`
+      msg: `URL含有非法参数：act=${act}`
     })
     return
   }
-  let r = await Disposal.findById(id)
-  if (!r) {
+  let disp = await Disposal.findById(id)
+  if (!disp) {
     //res.status(404).send(`未找到指定的销号记录：${id}`)
     res.send({
       ok: false,
@@ -157,7 +157,7 @@ router.post('/:id/:act/by/:uid', async (req, res) => {
     })
     return
   }
-  if (r.status != 'requested') {
+  if (disp.status != 'requested') {
     //res.status(412).send(`指定的销号记录已被处理：${id}`)
     res.send({
       ok: false,
@@ -166,16 +166,48 @@ router.post('/:id/:act/by/:uid', async (req, res) => {
     return
   }
 
-  let result = await Disposal.update(
-    {
-      status: act,
-      repliedAt: new Date(),
-      replyUserId: uid
-    },
-    {
-      where: { id }
-    }
-  )
+  db.transaction(t => {
+    let reason = null
+    if(act == 'rejected')
+      reason = req.body.reason
+    return Disposal.update(
+      {
+        status: act,
+        repliedAt: new Date(),
+        replyUserId: uid,
+        rejectReason: reason
+      },
+      {
+        where: { id },
+        transaction: t
+      }
+    ).then(r1 => {
+      if(r1.length>0 && r1[0]==1) {
+        // 同步巡检记录的销号状态
+        return Inspect.update(
+          {
+            disposalStatus: act
+          },
+          {
+            where: {
+              id: disp.inspectId
+            },
+            transaction: t
+          }
+        )
+        result = {
+          ok: true
+        }
+        
+      }
+    }).catch(ex => {
+      res.send({
+        ok: false,
+        msg: ex.message
+      })
+    })
+  })
+
   //if (result && result.length > 0 && result[0] == 1)
   res.send({
     ok: true,

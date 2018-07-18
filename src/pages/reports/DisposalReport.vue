@@ -206,22 +206,29 @@ export default {
         .then(r => {
           if (!r.data.ok) throw r.data.msg
           this.onQuery()
-          alert('该销号申请审核通过！')
+          alert('操作成功，准予销号！')
         })
         .catch(ex => {
           alert('服务器处理失败：\n' + ex)
         })
     },
     onReject() {
+      let reason = prompt('请输入拒绝的原因：')
+      if (!reason) return
+
       let d = this.selectedDisposal
       let user = this.$xutils.getUser()
       let url = `/api/disposals/${d.id}/rejected/by/${user.id}`
       this.$axios
-        .post(url)
+        .post(url, {
+          params: {
+            reason: reason
+          }
+        })
         .then(r => {
           if (!r.data.ok) throw r.data.msg
           this.onQuery()
-          alert('该销号申请审核不通过！')
+          alert('操作成功，不准销号！')
         })
         .catch(ex => {
           alert('服务器处理失败：\n' + ex)

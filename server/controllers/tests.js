@@ -11,6 +11,10 @@ router.get('/hello', (req, res) => {
   res.send('Hello, World!')
 })
 
+router.post('/body', (req, res) => {
+  res.send(req.body)
+})
+
 let ws_data = [
   {
     id: 1,
