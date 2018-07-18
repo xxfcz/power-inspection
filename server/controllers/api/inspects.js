@@ -80,7 +80,7 @@ router.get('/', async (req, res) => {
     let d1 = req.query.d1
     let d2 = req.query.d2
     let ds = _.trim(req.query.ds)
-    if (ds != '_all_') where.disposalStatus = ds
+    if (ds && ds != '_all_') where.disposalStatus = ds
     if (d1 && d2) {
       where.time = {
         [Op.gte]: moment(d1).toDate(),
