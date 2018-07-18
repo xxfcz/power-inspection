@@ -4,7 +4,7 @@ const _ = require('lodash')
 const fse = require('fs-extra')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
-const PLAIN = {plain: true}
+const PLAIN = { plain: true }
 const dbFile = path.join(__dirname, '../db.json')
 
 // const sequelize = new Sequelize('powerins', 'postgres', 'postgres', {
@@ -22,11 +22,20 @@ const dbFile = path.join(__dirname, '../db.json')
 const sequelize = require('../db')
 
 const Model = require('../models')
-let {Workshop, Section, Device, User, Inspect, Schedule, ScheduleItem, Disposal} = Model
+let {
+  Workshop,
+  Section,
+  Device,
+  User,
+  Inspect,
+  Schedule,
+  ScheduleItem,
+  Disposal
+} = Model
 
 let initDb = async () => {
   try {
-    await sequelize.sync({force: true})
+    await sequelize.sync({ force: true })
     //await sequelize.getQueryInterface().bulkDelete('workshops')
     let data = await fse.readFile(dbFile)
     data = JSON.parse(data)
@@ -60,15 +69,18 @@ let initDb = async () => {
     await ScheduleItem.bulkCreate(data.schedule_items)
     // 添加昨日计划项
     data.schedule_items.forEach(e => {
-      e.date = moment().subtract(1, 'day').format('YYYY-MM-DD')
+      e.date = moment()
+        .subtract(1, 'day')
+        .format('YYYY-MM-DD')
     })
     await ScheduleItem.bulkCreate(data.schedule_items)
     // 添加月底计划项
     data.schedule_items.forEach(e => {
-      e.date = moment().add(1, 'day').format('YYYY-MM-DD')
+      e.date = moment()
+        .add(1, 'day')
+        .format('YYYY-MM-DD')
     })
     await ScheduleItem.bulkCreate(data.schedule_items)
-
   } catch (err) {
     console.log('===============================================')
     console.error('initDb(): Error occurred:', err)
@@ -131,19 +143,19 @@ let play4 = async () => {
     where: {
       time: {
         [Op.gte]: moment('2018-07-08').toDate(),
-        [Op.lte]: moment('2018-07-09').add(1, 'day').toDate()
+        [Op.lte]: moment('2018-07-09')
+          .add(1, 'day')
+          .toDate()
       }
     }
   })
-  if(r)
-    console.log(r.get(PLAIN))
-  else
-    console.warn('No result')
+  if (r) console.log(r.get(PLAIN))
+  else console.warn('No result')
 }
 
 let play5 = async () => {
   let r = await Disposal.findOne({
-    include:[
+    include: [
       {
         model: Workshop,
         where: {
@@ -155,19 +167,57 @@ let play5 = async () => {
     where: {
       requestTime: {
         [Op.gte]: moment('2018-07-15').toDate(),
-        [Op.lte]: moment('2018-07-16').add(1, 'day').toDate()
+        [Op.lte]: moment('2018-07-16')
+          .add(1, 'day')
+          .toDate()
       }
     }
   })
-  if(r)
-    console.log(r.get(PLAIN))
-  else
-    console.warn('No result')
+  if (r) console.log(r.get(PLAIN))
+  else console.warn('No result')
 }
 
-let play5 = async ()=> {
-  let r = await Disposal.findOne({
-    id: 1
+let play6 = async () => {
+  let r = await Inspect.findAll({
+    include: [
+      {
+        model: Disposal,
+        required: false
+      }
+    ]
+  })
+  if (r)
+    console.log(
+      r.map(e => {
+        return e.get(PLAIN)
+      })
+    )
+  else console.log('NONE')
+}
+
+let play7 = async () => {
+  await sequelize.transaction(async t => {
+    await Disposal.update({
+      status: 'approved'
+    },{
+      transaction: t,
+      where: {
+        inspectId: 1
+      }
+    })
+
+    let r = await Disposal.findOne(
+      {
+        where: {
+          inspectId: 1
+        },
+        transaction: t
+      }
+    )
+
+    console.log(r.status)
+
+    throw 'Failed'
   })
 }
 
@@ -176,8 +226,8 @@ let run = async () => {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
     //await initDb()
-
-    await play5()
+    //Disposal.sync({force: true})
+    await play7()
   } catch (err) {
     console.log('===============================================')
     console.error('run(): Error occurred:', err)
@@ -188,7 +238,7 @@ let run = async () => {
 
 let test = async () => {
   await sequelize.authenticate()
-  await User.sync({force: true})
+  await User.sync({ force: true })
 
   process.exit(0)
 }
