@@ -33,7 +33,8 @@ Workshop.hasMany(User)
 const Device = sequelize.define('device', {
   name: { type: Sequelize.STRING },
   latitude: { type: Sequelize.DOUBLE },
-  longitude: { type: Sequelize.DOUBLE }
+  longitude: { type: Sequelize.DOUBLE },
+  images: Sequelize.ARRAY(Sequelize.STRING)
 })
 Device.belongsTo(Section)
 Section.hasMany(Device)

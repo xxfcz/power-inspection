@@ -33,9 +33,9 @@ let {
   Disposal
 } = Model
 
-let initDb = async () => {
+let initDb = async (force=true) => {
   try {
-    await sequelize.sync({ force: true })
+    await sequelize.sync({ force: force })
     //await sequelize.getQueryInterface().bulkDelete('workshops')
     let data = await fse.readFile(dbFile)
     data = JSON.parse(data)
@@ -221,13 +221,24 @@ let play7 = async () => {
   })
 }
 
+let play8 = async()=>{
+  let r = await Device.findOne({
+    where:{
+      images : {
+        [Op.not]: null
+      }
+    }
+  })
+  console.log(r.images)
+}
+
 let run = async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    //await initDb()
+    //await initDb(true)
     //Disposal.sync({force: true})
-    await play7()
+    await play8()
   } catch (err) {
     console.log('===============================================')
     console.error('run(): Error occurred:', err)

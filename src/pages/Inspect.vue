@@ -11,13 +11,20 @@
         <option v-for="d in devices" :value="d" :data-distance="d.distance" :disabled="d.disabled">
           {{d.section.name}} {{d.name}} - {{d.distance}}m {{d.disabled?'（不可选）':''}}</option>
       </select>
+      <section v-if="selectedDevice">
+        <div>设备档案照片：</div>
+        <div v-for="i in selectedDevice.images" style="text-align:center">
+          <img :src="i" style="float:left; width: 33%; max-height:160px" @click="selectedImage=i">
+        </div>
+        <div style="clear:both"></div>
+      </section>
     </div>
     <div class="section">
-      <label>选择照片：
+      <label>现场照片：
         <input type="file" accept="image/*" multiple @change="fileChanged">
       </label>
       <div v-for="i in images" style="text-align:center">
-        <img :src="i.data" style="max-width: 60%; max-height:160px">
+        <img :src="i.data" style="max-width: 60%; max-height:160px" @click="selectedImage=i.data">
         <div style="position:relative">
           <div style="float:left">{{ i.size | bytes() }}</div>
           <div style="margin-left: 120px; text-align:right">拍摄于 {{new Date(i.lastModified) | moment().format('YYYY-MM-DD hh:mm')}}</div>
@@ -50,6 +57,11 @@
 
     <div class="section">
       <button @click="save">保存</button>
+    </div>
+
+    <!-- 大照片 -->
+    <div v-if="selectedImage" style="position: fixed; left:0; top:0; right:0;bottom:0; background-color: gray; overflow:scroll">
+      <img :src="selectedImage" style="width:100%" @click="selectedImage=null">
     </div>
 
   </div>
@@ -86,7 +98,9 @@ export default {
       longitude: null,
       latitude: null,
       // 拍摄的照片
-      images: []
+      images: [],
+      // 预览大图
+      selectedImage: null
     }
   },
   mounted() {

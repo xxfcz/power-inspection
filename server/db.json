@@ -106,14 +106,16 @@
       "name": "箱变22#",
       "longitude": 111.899,
       "latitude": 27.184,
-      "sectionId": 1
+      "sectionId": 1,
+      "images": ["/upload/devices/1.jpg","/upload/devices/2.jpg"]
     },
     {
       "id": 2,
       "name": "箱变23#",
       "longitude": 111.897,
       "latitude": 27.183,
-      "sectionId": 1
+      "sectionId": 1,
+      "images": ["/upload/devices/3.jpg"]
     },
     {
       "id": 3,
@@ -127,7 +129,8 @@
       "name": "HH #1",
       "longitude": 112.6339035,
       "latitude": 26.8922348,
-      "sectionId": 2
+      "sectionId": 2,
+      "images": ["/upload/devices/4.jpg"]
     },
     {
       "id": 5,
