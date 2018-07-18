@@ -19,12 +19,29 @@
         <input type="date" v-model="endDate">
       </label>
     </div>
-    <div>状态：
+    <div>设备状态：
       <label>
         <input type="radio" v-model="normality" value="normal">正常
       </label>
       <label>
         <input type="radio" v-model="normality" value="abnormal">异常
+      </label>
+    </div>
+    <div>销号状态：
+      <label>
+        <input type="radio" v-model="disposalStatus" value="_all_">全部
+      </label>
+      <label>
+        <input type="radio" v-model="disposalStatus" value="none">待申请
+      </label>
+      <label>
+        <input type="radio" v-model="disposalStatus" value="requested">待审核
+      </label>
+      <label>
+        <input type="radio" v-model="disposalStatus" value="approved">已通过
+      </label>
+      <label>
+        <input type="radio" v-model="disposalStatus" value="rejected">不通过
       </label>
     </div>
     <div style="text-align:center;margin-top: 12px">
@@ -33,7 +50,7 @@
     </div>
     <!-- 结果网格 -->
     <div style="overflow-x: scroll" class="section">
-      <table style="min-width: 560px;">
+      <table style="min-width: 600px;">
         <thead>
           <tr>
             <th>区段</th>
@@ -42,6 +59,7 @@
             <th>缺陷</th>
             <th>巡检时间</th>
             <th>巡检人</th>
+            <th>销号状态</th>
           </tr>
         </thead>
         <tbody>
@@ -52,6 +70,7 @@
             <td>{{i.fault || '无'}}</td>
             <td>{{i.createTime | datetime}}</td>
             <td>{{i.user}}</td>
+            <td>{{i.disposalStatus}}</td>
           </tr>
         </tbody>
       </table>
@@ -71,8 +90,8 @@
     </div>
 
     <!-- 销号申请 -->
-    <div style="clear:both" class="section" v-if="disposal.can">
-      <button @click="disposal.visible=!disposal.visible">销号
+    <div style="clear:both" class="section" v-if="canRequestDisposal">
+      <button @click="disposal.visible=!disposal.visible">我要申请销号
         <span v-if="disposal.visible">▲</span>
         <span v-else="disposal.visible">▼</span>
       </button>
@@ -88,7 +107,7 @@
           </div>
         </div>
         <div>
-          <button @click="onRequestDisposal($event)">申请销号</button>
+          <button @click="onRequestDisposal($event)">提交销号申请</button>
         </div>
       </div>
     </div>
@@ -120,12 +139,12 @@ export default {
         .format('YYYY-MM-DD'),
       endDate: this.$moment().format('YYYY-MM-DD'),
       normality: 'abnormal',
+      disposalStatus: '_all_',
       inspects: [],
       selectedInspect: null,
       selectedImage: null,
       // 销号相关
       disposal: {
-        can: true,
         visible: false,
         images: [],
         files: []
@@ -134,6 +153,13 @@ export default {
   },
   mounted() {
     this.loadWorkshops()
+  },
+  computed: {
+    canRequestDisposal() {
+      return (
+        this.selectedInspect && this.selectedInspect.disposalStatus == 'none'
+      )
+    }
   },
   methods: {
     loadWorkshops() {
@@ -148,13 +174,15 @@ export default {
     },
 
     onQuery() {
+      this.selectedInspect = null
       this.$axios
         .get('/api/inspects', {
           params: {
             w: this.selectedWorkshop.name,
             d1: this.startDate,
             d2: this.endDate,
-            n: this.normality
+            n: this.normality,
+            ds: this.disposalStatus
           }
         })
         .then(r => {
@@ -162,9 +190,10 @@ export default {
         })
     },
     onExport() {
-      let url = `/api/inspects?w=${this.selectedWorkshop.name}&d1=${
-        this.startDate
-      }&d2=${this.endDate}&_export=true`
+      let url = `/api/inspects?w=${this.selectedWorkshop.name}&ds=${
+        this.disposalStatus
+      }
+        &d1=${this.startDate}&d2=${this.endDate}&_export=true`
       window.open(url, '_blank')
     },
     fileChanged(e) {
@@ -189,10 +218,10 @@ export default {
       let iid = this.selectedInspect.id
       let url = `/api/disposals/request/${iid}/${user.id}`
       let formData = new FormData()
-      this.disposal.files.forEach((f,i) => {
+      this.disposal.files.forEach((f, i) => {
         formData.append('file' + i, f)
       })
-      
+
       let config = {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -205,7 +234,7 @@ export default {
           if (res.data.ok) {
             this.disposal.files = []
             this.disposal.images = []
-            this.disposal.can = false
+            this.selectedInspect = null
             alert('提交成功！')
           } else {
             throw '提交失败：' + res.data.msg

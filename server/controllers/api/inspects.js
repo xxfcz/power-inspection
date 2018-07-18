@@ -79,6 +79,8 @@ router.get('/', async (req, res) => {
     if (n) where.deviceStatus = n
     let d1 = req.query.d1
     let d2 = req.query.d2
+    let ds = _.trim(req.query.ds)
+    if (ds != '_all_') where.disposalStatus = ds
     if (d1 && d2) {
       where.time = {
         [Op.gte]: moment(d1).toDate(),
@@ -96,8 +98,10 @@ router.get('/', async (req, res) => {
   // 取巡检记录
   let inspects = await Inspect.findAll({
     where
+  }).map(e => {
+    return e.get({ plain: true })
   })
-  if (_export) require('../xutils').exportXlsx(res, inspects, '巡检记录')
+  if (_export) require('../../xutils').exportXlsx(res, inspects, '巡检记录')
   else res.send(inspects)
 })
 
