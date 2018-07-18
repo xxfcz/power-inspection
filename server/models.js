@@ -75,9 +75,9 @@ Section.hasMany(ScheduleItem)
 
 const Disposal = sequelize.define('disposal', {
   status: {type: Sequelize.ENUM, values: ['requested', 'approved', 'rejected']},
-  requestTime: Sequelize.DATE,
+  requestedAt: Sequelize.DATE,
   images: Sequelize.ARRAY(Sequelize.STRING),
-  replyDate: Sequelize.DATE,
+  repliedAt: Sequelize.DATE,
   rejectReason: Sequelize.STRING,
 })
 

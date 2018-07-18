@@ -172,7 +172,7 @@ export default {
       if (!files.length) return
       this.$_.forEach(files, f => {
         this.disposal.files.push(f)
-        this.$utils.readImage(f).then(data => {
+        this.$xutils.readImage(f).then(data => {
           this.disposal.images.push({
             name: f.name,
             size: f.size,

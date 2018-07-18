@@ -75,7 +75,7 @@ export default {
   },
   methods: {
     useCurrentPosition() {
-      this.$utils
+      this.$xutils
         .getCurrentPosition()
         .then(coords => {
           this.curPos.longitude = coords.longitude
@@ -96,7 +96,7 @@ export default {
       let lng1 = parseFloat(this.device.longitude)
       let lat2 = parseFloat(this.curPos.latitude)
       let lng2 = parseFloat(this.curPos.longitude)
-      this.distance = this.$utils.calcDistance(lat1, lng1, lat2, lng2)
+      this.distance = this.$xutils.calcDistance(lat1, lng1, lat2, lng2)
     },
     submit() {
       if (

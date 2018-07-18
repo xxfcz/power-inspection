@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import utils from './utils'
+import xutils from './xutils'
 
 import axios from 'axios'
 import Dexie from 'dexie'
@@ -12,7 +12,7 @@ import bytes from 'bytes'
 import _ from 'lodash'
 
 Vue.use(VueMomentLib)
-Vue.prototype.$utils = utils
+Vue.prototype.$xutils = xutils
 Vue.prototype.$axios = axios
 
 Vue.config.productionTip = false

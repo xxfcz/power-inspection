@@ -68,8 +68,6 @@ option:disabled {
 
 
 <script>
-import utils from '@/utils'
-
 const DIST_LIMIT = 500 // 不显示距离超过500米的设备
 
 export default {
@@ -120,7 +118,7 @@ export default {
       this.$db.tasks.toArray(tasks => {
         tasks.forEach(t => {
           // 计算每个设备到当前位置的距离
-          let dist = this.$utils.calcDistance(
+          let dist = this.$xutils.calcDistance(
             t.latitude,
             t.longitude,
             this.latitude,
@@ -151,7 +149,7 @@ export default {
       let files = e.target.files || e.dataTransfer.files
       if (!files.length) return
       this.$_.forEach(files, f => {
-        this.$utils.readImage(f).then(data => {
+        this.$xutils.readImage(f).then(data => {
           /*
             {
               lastModified,

@@ -70,6 +70,10 @@ function readImage(file) {
   })
 }
 
+function getUser(){
+  return JSON.parse(localStorage.getItem('user'))
+}
+
 export default {
   /**
  * caculate the distance
@@ -80,5 +84,6 @@ export default {
  */
   calcDistance: calcGreatCircleDistance,
   getCurrentPosition: getCurrentPosition,
-  readImage: readImage
+  readImage: readImage,
+  getUser
 }

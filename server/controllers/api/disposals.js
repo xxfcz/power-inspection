@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
     let d1 = req.query.d1
     let d2 = req.query.d2
     if (d1 && d2) {
-      where.requestTime = {
+      where.requestedAt = {
         [Op.gte]: moment(d1).toDate(),
         [Op.lte]: moment(d2)
           .add(1, 'day')
@@ -38,7 +38,7 @@ router.get('/', async (req, res) => {
 
   // 取结果记录
   let resultSet = await Disposal.findAll({
-    include:[
+    include: [
       {
         model: Workshop,
         where: {
@@ -79,7 +79,7 @@ router.post('/request/:inspectId/:userId', async (req, res) => {
     let r = await Disposal.findOrCreate({
       where: obj,
       defaults: {
-        requestTime: new Date(),
+        requestedAt: new Date(),
         images: images
       }
     })
@@ -88,23 +88,51 @@ router.post('/request/:inspectId/:userId', async (req, res) => {
 })
 
 /**
- * 同意销号
+ * 同意销号（审核通过）
  */
-router.post('/:id/approved/by/:uid', async (req, res)=>{
+router.post('/:id/:act/by/:uid', async (req, res) => {
   let id = parseInt(req.params.id)
-  let r = await Disposal.findById(id)
-  if(!r) {
-    res.status(500).send(`未找到指定的销号记录：${id}`)
+  let uid = parseInt(req.params.uid)
+  let act = req.params.act
+  if(act != 'approved' && act != 'rejected') {
+    res.send({
+      ok: false,
+      msg:`URL含有非法参数：${act}`
+    })
     return
   }
-  if(r.status != 'requested') {
-    res.status(500).send(`指定的销号记录已被处理：${id}`)
-    return    
+  let r = await Disposal.findById(id)
+  if (!r) {
+    //res.status(404).send(`未找到指定的销号记录：${id}`)
+    res.send({
+      ok: false,
+      msg: `未找到指定的销号记录：id=${id}`
+    })
+    return
   }
-  await Disposal.update(r.data)
+  if (r.status != 'requested') {
+    //res.status(412).send(`指定的销号记录已被处理：${id}`)
+    res.send({
+      ok: false,
+      msg: `指定的销号记录已被处理：id=${id}`
+    })
+    return
+  }
 
+  let result = await Disposal.update(
+    {
+      status: act,
+      repliedAt: new Date(),
+      replyUserId: uid
+    },
+    {
+      where: { id }
+    }
+  )
+  //if (result && result.length > 0 && result[0] == 1)
   res.send({
-    ok: true
+    ok: true,
+    msg: `请求的操作已成功执行`
   })
 })
 

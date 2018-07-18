@@ -75,7 +75,8 @@
 
     <!-- 销号处理 -->
     <div class="section" style="clear: both; text-align:center" v-if="selectedDisposal && selectedDisposal.status == 'requested'">
-      <button>审核通过</button>&nbsp;<button>审核不通过</button>
+      <button @click="onApprove">审核通过</button>&nbsp;
+      <button @click="onReject">审核不通过</button>
     </div>
   </div>
 </template>
@@ -107,7 +108,7 @@ export default {
       status: 'requested',
       disposals: [],
       selectedDisposal: null,
-      selectedImage: null,
+      selectedImage: null
     }
   },
   mounted() {
@@ -153,7 +154,7 @@ export default {
       if (!files.length) return
       this.$_.forEach(files, f => {
         this.disposal.files.push(f)
-        this.$utils.readImage(f).then(data => {
+        this.$xutils.readImage(f).then(data => {
           this.disposal.images.push({
             name: f.name,
             size: f.size,
@@ -170,10 +171,10 @@ export default {
       let iid = this.selectedInspect.id
       let url = `/api/disposals/request/${iid}/${user.id}`
       let formData = new FormData()
-      this.disposal.files.forEach((f,i) => {
+      this.disposal.files.forEach((f, i) => {
         formData.append('file' + i, f)
       })
-      
+
       let config = {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -184,9 +185,9 @@ export default {
         .post(url, formData, config)
         .then(function(res) {
           if (res.status === 200) {
-            this.disposal.files = []
-            this.disposal.images = []
-            this.disposal.can = false
+            this.selectedDisposal.files = []
+            this.selectedDisposal.images = []
+            this.selectedDisposal.can = false
             alert('提交成功！')
           } else {
             throw '提交失败'
@@ -194,6 +195,36 @@ export default {
         })
         .catch(ex => {
           alert(ex.message)
+        })
+    },
+    onApprove() {
+      let d = this.selectedDisposal
+      let user = this.$xutils.getUser()
+      let url = `/api/disposals/${d.id}/approved/by/${user.id}`
+      this.$axios
+        .post(url)
+        .then(r => {
+          if (!r.data.ok) throw r.data.msg
+          this.onQuery()
+          alert('该销号申请审核通过！')
+        })
+        .catch(ex => {
+          alert('服务器处理失败：\n' + ex)
+        })
+    },
+    onReject() {
+      let d = this.selectedDisposal
+      let user = this.$xutils.getUser()
+      let url = `/api/disposals/${d.id}/rejected/by/${user.id}`
+      this.$axios
+        .post(url)
+        .then(r => {
+          if (!r.data.ok) throw r.data.msg
+          this.onQuery()
+          alert('该销号申请审核不通过！')
+        })
+        .catch(ex => {
+          alert('服务器处理失败：\n' + ex)
         })
     }
   }
