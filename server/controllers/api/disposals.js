@@ -7,6 +7,7 @@ const moment = require('moment')
 const Sequelize = require('sequelize')
 const Op = Sequelize.Op
 
+const db = require('../../db')
 const config = require('../../config')
 const Model = require('../../models')
 let { Workshop, Section, Device, User, Inspect, Disposal } = Model
@@ -70,20 +71,66 @@ router.post('/request/:inspectId/:userId', async (req, res) => {
       // }
       return e.path.replace(form.uploadDir, '/upload')
     })
-
-    let obj = {
-      status: 'requested',
-      inspectId: req.params.inspectId,
-      requestUserId: req.params.userId
+    let iid = req.params.inspectId
+    let uid = req.params.userId
+    let user = await User.findById(uid)
+    if (!user) {
+      return res.send({
+        ok: false,
+        msg: `用户ID不存在：${uid}`
+      })
     }
-    let r = await Disposal.findOrCreate({
-      where: obj,
-      defaults: {
-        requestedAt: new Date(),
-        images: images
+    // 检查是否已有销号记录
+    let disp = await Disposal.findOne({
+      where: {
+        inspectId: iid
       }
     })
-    res.send(r[0])
+    if (disp) {
+      return res.send({
+        ok: false,
+        msg: `指定的巡检记录${iid}已有对应的销号记录`
+      })
+    }
+    // 在一个事务中：创建销号记录，并更新巡检记录的销号状态
+    db.transaction(async t => {
+      let result = {}
+      try {
+        // 创建销号记录（申请销号）
+        await Disposal.create(
+          {
+            status: 'requested',
+            inspectId: iid,
+            requestUserId: uid,
+            workshopId: user.workshopId,
+            requestedAt: new Date(),
+            images: images
+          },
+          { transaction: t }
+        )
+        // 同步巡检记录的销号状态
+        await Inspect.update(
+          {
+            disposalStatus: 'requested'
+          },
+          {
+            where: {
+              id: iid
+            },
+            transaction: t
+          }
+        )
+        result = {
+          ok: true
+        }
+      } catch (ex) {
+        result = {
+          ok: false,
+          msg: `服务器出错：${ex.message}`
+        }
+      }
+      res.send(result)
+    })
   })
 })
 
@@ -94,10 +141,10 @@ router.post('/:id/:act/by/:uid', async (req, res) => {
   let id = parseInt(req.params.id)
   let uid = parseInt(req.params.uid)
   let act = req.params.act
-  if(act != 'approved' && act != 'rejected') {
+  if (act != 'approved' && act != 'rejected') {
     res.send({
       ok: false,
-      msg:`URL含有非法参数：${act}`
+      msg: `URL含有非法参数：${act}`
     })
     return
   }

@@ -31,24 +31,30 @@ User.belongsTo(Workshop)
 Workshop.hasMany(User)
 
 const Device = sequelize.define('device', {
-  name: {type: Sequelize.STRING},
-  latitude: {type: Sequelize.DOUBLE},
-  longitude: {type: Sequelize.DOUBLE}
+  name: { type: Sequelize.STRING },
+  latitude: { type: Sequelize.DOUBLE },
+  longitude: { type: Sequelize.DOUBLE }
 })
 Device.belongsTo(Section)
 Section.hasMany(Device)
 
 const Inspect = sequelize.define('inspect', {
-  workshop: {type: Sequelize.STRING},
-  section: {type: Sequelize.STRING},
-  device: {type: Sequelize.STRING},
-  user: {type: Sequelize.STRING},
-  deviceStatus: {type: Sequelize.STRING},
-  fault: {type: Sequelize.STRING},
-  images: {type: Sequelize.JSON},
-  latitude: {type: Sequelize.DOUBLE},
-  longitude: {type: Sequelize.DOUBLE},
-  time: Sequelize.DATE
+  workshop: { type: Sequelize.STRING },
+  section: { type: Sequelize.STRING },
+  device: { type: Sequelize.STRING },
+  user: { type: Sequelize.STRING },
+  deviceStatus: { type: Sequelize.STRING },
+  fault: { type: Sequelize.STRING },
+  images: { type: Sequelize.JSON },
+  latitude: { type: Sequelize.DOUBLE },
+  longitude: { type: Sequelize.DOUBLE },
+  time: Sequelize.DATE,
+  // 销号状态（冗余设计）
+  disposalStatus: {
+    type: Sequelize.ENUM,
+    values: ['none', 'requested', 'approved', 'rejected'],
+    defaultValue: 'none'
+  }
 })
 
 const Schedule = sequelize.define('schedule', {
@@ -63,8 +69,8 @@ Schedule.belongsTo(Workshop)
 Workshop.hasMany(Schedule)
 
 const ScheduleItem = sequelize.define('schedule_item', {
-  date: {type: Sequelize.DataTypes.DATEONLY},
-  userIds: Sequelize.DataTypes.JSONB, // [1,2,3]
+  date: { type: Sequelize.DataTypes.DATEONLY },
+  userIds: Sequelize.DataTypes.JSONB // [1,2,3]
 })
 
 ScheduleItem.belongsTo(Schedule)
@@ -74,20 +80,37 @@ ScheduleItem.belongsTo(Section)
 Section.hasMany(ScheduleItem)
 
 const Disposal = sequelize.define('disposal', {
-  status: {type: Sequelize.ENUM, values: ['requested', 'approved', 'rejected']},
+  status: {
+    type: Sequelize.ENUM,
+    values: ['requested', 'approved', 'rejected']
+  },
   requestedAt: Sequelize.DATE,
   images: Sequelize.ARRAY(Sequelize.STRING),
   repliedAt: Sequelize.DATE,
   rejectReason: Sequelize.STRING,
+  inspectId: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    unique: true
+  }
 })
 
-Disposal.belongsTo(Workshop)
-Disposal.belongsTo(Inspect)
-Disposal.belongsTo(User, {as: 'requestUser'})
-User.hasMany(Disposal, {as: 'DisposalRequests', foreignKey: 'requestUserId', targetKey: 'id'})
-Disposal.belongsTo(User, {as: 'replyUser'})
-User.hasMany(Disposal, {as: 'DisposalReplies', foreignKey: 'replyUserId', sourceKey: 'id'})
+Disposal.belongsTo(Workshop)  // 冗余设计
 
+Disposal.belongsTo(Inspect)
+Inspect.hasOne(Disposal)
+Disposal.belongsTo(User, { as: 'requestUser' })
+User.hasMany(Disposal, {
+  as: 'DisposalRequests',
+  foreignKey: 'requestUserId',
+  targetKey: 'id'
+})
+Disposal.belongsTo(User, { as: 'replyUser' })
+User.hasMany(Disposal, {
+  as: 'DisposalReplies',
+  foreignKey: 'replyUserId',
+  sourceKey: 'id'
+})
 
 module.exports = {
   Workshop: Workshop,
@@ -99,4 +122,3 @@ module.exports = {
   ScheduleItem: ScheduleItem,
   Disposal: Disposal
 }
-

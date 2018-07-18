@@ -201,18 +201,19 @@ export default {
 
       this.$axios
         .post(url, formData, config)
-        .then(function(res) {
-          if (res.status === 200) {
+        .then(res => {
+          if (res.data.ok) {
             this.disposal.files = []
             this.disposal.images = []
             this.disposal.can = false
             alert('提交成功！')
           } else {
-            throw '提交失败'
+            throw '提交失败：' + res.data.msg
           }
         })
         .catch(ex => {
-          alert(ex.message)
+          console.error(ex)
+          alert(ex)
         })
     }
   }

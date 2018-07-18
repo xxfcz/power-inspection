@@ -183,7 +183,7 @@ export default {
 
       this.$axios
         .post(url, formData, config)
-        .then(function(res) {
+        .then(res => {
           if (res.status === 200) {
             this.selectedDisposal.files = []
             this.selectedDisposal.images = []
