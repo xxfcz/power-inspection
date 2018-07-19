@@ -30,7 +30,20 @@ app.use(
 
 app.use(
   expressJWT({
-    secret: config.tokenSecret
+    secret: config.tokenSecret,
+    getToken: function fromHeaderOrQuerystring(req) {
+      if (
+        req.headers.authorization &&
+        req.headers.authorization.split(' ')[0] === 'Bearer'
+      ) {
+        return req.headers.authorization.split(' ')[1]
+      } else if (req.query && req.query._token) {
+        return req.query._token
+      } else if (req.body && req.body._token) {
+        return req.body._token
+      }
+      return null
+    }
   }).unless({
     path: ['/api/users/token'] //除了这些地址，其他的URL都需要验证
   })
