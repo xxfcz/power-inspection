@@ -24,12 +24,18 @@ export default new Router({
     {
       path: '/inspect',
       name: 'inspect',
-      component: Inspect
+      component: Inspect,
+      meta:{
+        login: true
+      }
     },
     {
       path: '/my-tasks',
       name: 'my-tasks',
-      component: MyTasks
+      component: MyTasks,
+      meta:{
+        login: true
+      }
     },
     {
       path: '/local-records',
@@ -59,17 +65,26 @@ export default new Router({
     {
       path: '/device-report',
       name: 'device-report',
-      component: DeviceReport
+      component: DeviceReport,
+      meta:{
+        login: true
+      }
     },
     {
       path: '/inspect-report',
       name: 'inspect-report',
-      component: InspectReport
+      component: InspectReport,
+      meta:{
+        login: true
+      }
     },
     {
       path: '/disposal-report',
       name: 'disposal-report',
-      component: DisposalReport
+      component: DisposalReport,
+      meta:{
+        login: true
+      }
     }
   ]
 })

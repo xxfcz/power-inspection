@@ -73,6 +73,32 @@ Vue.filter('bytes', n => {
 })
 Vue.prototype.$bytes = bytes
 
+router.beforeEach((to, from, next) => {
+  // console.info(22, window.location.href)
+  // console.info(to,from,next)
+  // 对路由变化作出响应...
+  // console.log(router,to)
+  // console.log(router,to.query, from)
+  // console.log(to,$.param( to.query ),window.location.href)
+
+  //全局拦截器的
+  if (to.meta.login) {
+    // 判断该路由是否需要登录权限
+    if (xutils.getToken()) {
+      // 通过store获取当前的token是否存在
+      next()
+    } else {
+      alert('未登录，请先登录') //promise
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath } // 将跳转的路由path作为参数，登录成功后跳转到该路由
+      })
+    }
+  } else {
+    next()
+  }
+})
+
 // 故障类型
 Vue.prototype.$faults = [
   '悬挂异物',

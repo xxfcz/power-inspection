@@ -74,6 +74,10 @@ function getUser(){
   return JSON.parse(localStorage.getItem('user'))
 }
 
+function getToken(){
+  return localStorage.getItem('token')
+}
+
 export default {
   /**
  * caculate the distance
@@ -85,5 +89,6 @@ export default {
   calcDistance: calcGreatCircleDistance,
   getCurrentPosition: getCurrentPosition,
   readImage: readImage,
-  getUser
+  getUser,
+  getToken
 }

@@ -3,12 +3,12 @@
     <h2>登录</h2>
     <div>
       <label>账号：
-        <input type="text" name="account" v-model="account">
+        <input type="text" name="account" v-model.trim="account">
       </label>
     </div>
     <div>
       <label>密码：
-        <input type="password" name="password" v-model="password">
+        <input type="password" name="password" v-model.trim="password">
       </label>
     </div>
     <div style="text-align: center">
