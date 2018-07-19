@@ -1,8 +1,7 @@
 <template>
   <div>
     <div v-if="user">
-      <div>当前用户：{{ user.name || '请登录' }}</div>
-      <div style="margin-left: 2em" >{{user.workshopName}}</div>
+      <div>当前用户：{{ user.name }} （{{user.workshop.name}}）</div>
     </div>
     <ul>
       <li>
