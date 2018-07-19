@@ -51,7 +51,18 @@ router.get('/', async (req, res) => {
     where
   })
 
-  if (_export) require('../xutils').exportXlsx(res, resultSet, '销号记录')
+  if (_export) require('../xutils').exportXlsx(res, resultSet.map(e=>{
+    return {
+      id: e.id,
+      区间: e.inspect.section,
+      设备: e.inspect.device,
+      设备状态: e.inspect.deviceStatus,
+      缺陷: e.inspect.fault,
+      巡检人: e.inspect.user,
+      巡检时间: e.inspect.time,
+      销号状态: getDisposalStatus(e.disposalStatus)
+    }
+  }), '销号记录')
   else res.send(resultSet)
 })
 

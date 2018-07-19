@@ -98,3 +98,12 @@ exports.saveImages = async function (images, subDir = '') {
     return false
   }
 }
+
+exports.getDisposalStatus = s => {
+  switch(s){
+    case 'requested': return '待审核'
+    case 'approved': return '已销号'
+    case 'rejected': return '已驳回'
+    default: return s
+  }
+}

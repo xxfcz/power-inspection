@@ -103,10 +103,19 @@ router.get('/', async (req, res) => {
   // 取巡检记录
   let inspects = await Inspect.findAll({
     where
-  }).map(e => {
-    return e.get({ plain: true })
   })
-  if (_export) require('../../xutils').exportXlsx(res, inspects, '巡检记录')
+  if (_export) require('../../xutils').exportXlsx(res, inspects.map(e => {
+    return {
+      id: e.id,
+      区间: e.section,
+      设备: e.device,
+      设备状态: e.deviceStatus,
+      缺陷: e.fault,
+      巡检人: e.user,
+      巡检时间: e.time,
+      销号状态: xutils.getDisposalStatus(e.disposalStatus)
+    }
+  }), '巡检记录')
   else res.send(inspects)
 })
 

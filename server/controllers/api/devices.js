@@ -30,10 +30,9 @@ router.get('/', async (req, res) => {
       devices.map(e => {
         return {
           id: e.id,
-          name: e.name,
-          section: e.section.name,
-          latitude: e.latitude,
-          longitude: e.longitude
+          名称: e.name,
+          区间: e.section.name,
+          坐标: e.latitude + ',' + e.longitude
         }
       }),
       '设备清单'
