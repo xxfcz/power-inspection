@@ -144,9 +144,10 @@ export default {
         })
     },
     onExport() {
+      let token = localStorage.getItem('token')
       let url = `/api/inspects?w=${this.selectedWorkshop.name}&d1=${
         this.startDate
-      }&d2=${this.endDate}&_export=true`
+      }&d2=${this.endDate}&_export=true&_token=${token}`
       window.open(url, '_blank')
     },
     fileChanged(e) {

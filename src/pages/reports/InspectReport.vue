@@ -190,10 +190,11 @@ export default {
         })
     },
     onExport() {
+      let token = localStorage.getItem('token')
       let url = `/api/inspects?w=${this.selectedWorkshop.name}&ds=${
         this.disposalStatus
       }
-        &d1=${this.startDate}&d2=${this.endDate}&_export=true`
+        &d1=${this.startDate}&d2=${this.endDate}&_export=true&_token=${token}`
       window.open(url, '_blank')
     },
     fileChanged(e) {
@@ -235,6 +236,7 @@ export default {
             this.disposal.files = []
             this.disposal.images = []
             this.selectedInspect = null
+            this.onQuery()
             alert('提交成功！')
           } else {
             throw '提交失败：' + res.data.msg

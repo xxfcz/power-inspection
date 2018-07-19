@@ -67,8 +67,9 @@ export default {
       })
     },
     onExport() {
+      let token = localStorage.getItem('token')
       let wid = this.selectedWorkshop.id
-      let url = `/api/devices?wid=${wid}&_export=true`
+      let url = `/api/devices?wid=${wid}&_export=true&_token=${token}`
       window.open(url, '_blank')
     }
   }
