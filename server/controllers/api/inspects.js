@@ -70,29 +70,34 @@ router.post('/', (req, res, next) => {
 })
 
 router.get('/', async (req, res) => {
-  console.log(req.query)
   let where = {}
-  if (req.query) {
-    let w = req.query.w
-    if (w) where.workshop = w
-    let n = req.query.n
-    if (n) where.deviceStatus = n
-    let d1 = req.query.d1
-    let d2 = req.query.d2
-    let ds = _.trim(req.query.ds)
-    if (ds && ds != '_all_') where.disposalStatus = ds
-    if (d1 && d2) {
-      where.time = {
-        [Op.gte]: moment(d1).toDate(),
-        [Op.lte]: moment(d2)
-          .add(1, 'day')
-          .toDate()
-      }
+  let user = req.user.data
+  // qs参数 wid: 车间ID
+  if (user.workshopId > 1) {
+    where.workshop = user.workshop.name
+  } else if (req.query.w) {
+    where.workshop = req.query.w
+  }
+  // qs参数：设备状态
+  let n = req.query.n
+  if (n) where.deviceStatus = n
+  // qs参数：起止日期（包含）
+  let d1 = req.query.d1
+  let d2 = req.query.d2
+  // qs参数：销号状态
+  let ds = _.trim(req.query.ds)
+  if (ds && ds != '_all_') where.disposalStatus = ds
+  if (d1 && d2) {
+    where.time = {
+      [Op.gte]: moment(d1).toDate(),
+      [Op.lte]: moment(d2)
+        .add(1, 'day')
+        .toDate()
     }
   }
 
+  // qs参数 _export
   let _export = false
-  // 参数 _export
   if (req.query._export) _export = req.query._export == 'true'
 
   // 取巡检记录

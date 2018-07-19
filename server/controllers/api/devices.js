@@ -4,20 +4,16 @@ const { User, Section, Device } = require('../../models')
 const xutils = require('../../xutils')
 
 router.get('/', async (req, res) => {
-  let where = {}
-  let wid
   let _export = false
   let user = req.user.data
-  // 参数 wid: 车间ID
-  if (user.workshopId > 1) wid = user.workshopId
-  else if (req.query.wid) {
-    wid = parseInt(req.query.wid)
+  let where = {}
+  // qs参数 wid: 车间ID
+  if (user.workshopId > 1) {
+    where.workshopId = user.workshopId
+  } else if (req.query.wid) {
+    where.workshopId = parseInt(req.query.wid)
   }
-  if (wid)
-    where = {
-      workshopId: wid
-    }
-  // 参数 _export
+  // qs参数 _export
   if (req.query._export) _export = req.query._export == 'true'
 
   // 车间管内设备

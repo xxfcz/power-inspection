@@ -18,14 +18,13 @@ const xutils = require('../../xutils')
 
 router.get('/', async (req, res) => {
   let where = {}
-  // 参数 wid: 车间ID
-  if (req.query.wid) {
-    let wid = parseInt(req.query.wid)
-    where = {
-      workshopId: wid
-    }
+  // qs参数 wid: 车间ID
+  if (user.workshopId > 1) {
+    where.workshopId = user.workshopId
+  } else if (req.query.wid) {
+    where.workshopId = parseInt(req.query.wid)
   }
-  // 参数：月份 (2018.07)
+  // qs参数：月份 (2018.07)
   if (req.query.month) {
     where.month = req.query.month
   }
@@ -81,7 +80,7 @@ router.get('/:id', async (req, res) => {
     where,
     include: {
       model: Section,
-      attributes: ['id', 'name'],
+      attributes: ['id', 'name']
       // include: {
       //   model: Device
       // }
@@ -127,14 +126,14 @@ router.get('/user/:uid/todo', async (req, res) => {
       attributes: ['id', 'name'],
       include: {
         model: Device,
-        attributes: {exclude: ['createdAt', 'updatedAt']}
+        attributes: { exclude: ['createdAt', 'updatedAt'] }
       }
     }
   }).map(PLAIN)
 
   // 整理成设备清单
   let devices = []
-  items.forEach(e=>{
+  items.forEach(e => {
     let list = e.section.devices
     delete e.section.devices
     list.forEach(d => {
