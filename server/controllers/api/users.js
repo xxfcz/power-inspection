@@ -6,8 +6,14 @@ const config = require('../../config')
 const { User, Workshop } = require('../../models')
 
 router.get('/', async (req, res) => {
+  let user = req.user.data
+  let where = {}
+  if(user.workshopId>1) // 车间级账号，只能看本车间的职工名册
+    where.workshopId = user.workshopId
+  else if(req.query.wid)
+    where.workshopId = req.query.wid
   let users = await User.findAll({
-    where: req.query,
+    where,
     include: Workshop,
     attributes: { exclude: ['password'] }
   })
@@ -63,6 +69,11 @@ router.post('/token', async (req, res) => {
       msg: '账号/密码不匹配'
     })
   }
+})
+
+router.get('/whoami', (req, res) => {
+  let user = req.user.data
+  res.send(user)
 })
 
 router.get('/:id', async (req, res) => {
