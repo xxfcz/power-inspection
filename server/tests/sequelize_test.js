@@ -236,9 +236,8 @@ let run = async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    //await initDb(true)
-    //Disposal.sync({force: true})
-    await play8()
+    await initDb(true)
+    //await play8()
   } catch (err) {
     console.log('===============================================')
     console.error('run(): Error occurred:', err)

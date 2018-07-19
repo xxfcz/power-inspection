@@ -3,7 +3,7 @@
     <h2>登录</h2>
     <div>
       <label>账号：
-        <input type="text" name="userid" v-model="userid">
+        <input type="text" name="account" v-model="account">
       </label>
     </div>
     <div>
@@ -21,26 +21,28 @@
 export default {
   data() {
     return {
-      userid: '',
+      account: '',
       password: ''
     }
   },
   methods: {
     login() {
-      if (!this.userid || !this.password) {
+      if (!this.account || !this.password) {
         alert('请输入您的账号及密码')
         return
       }
       this.$axios
-        .get('/api/users', {
-          params: { name: this.userid, password: this.password }
+        .post('/api/users/token', {
+          account: this.account,
+          password: this.password
         })
         .then(r => {
-          if (r.data.length == 0) throw '找不到对应的账号！'
+          if (!r.data.ok) throw r.data.msg
 
-          alert('登录成功！')
-          let user = r.data[0]
+          let user = r.data.user
           localStorage.setItem('user', JSON.stringify(user))
+          localStorage.setItem('token', r.data.token)
+          alert('登录成功！')
           this.$router.go(-1)
         })
         .catch(err => {

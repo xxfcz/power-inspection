@@ -8,11 +8,32 @@ const path = require('path')
 const xutils = require('../xutils')
 
 router.get('/hello', (req, res) => {
+  console.log(req.user)
   res.send('Hello, World!')
 })
 
 router.post('/body', (req, res) => {
   res.send(req.body)
+})
+
+router.post('/token', (req, res) => {
+  res.json({
+    ok: true,
+    token: jwt.sign(
+      {
+        name: 'tester',
+        data: {
+          id: 1001,
+          name: 'tester'
+        }
+      },
+      'secretOrPrivateKey',
+      {
+        expiresIn: '10 minutes'
+      }
+    )
+  })
+
 })
 
 let ws_data = [

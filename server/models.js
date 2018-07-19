@@ -16,10 +16,11 @@ Section.belongsTo(Workshop)
 Workshop.hasMany(Section)
 
 const User = sequelize.define('user', {
-  name: {
+  account: Sequelize.STRING,
+  password: {
     type: Sequelize.STRING
   },
-  password: {
+  name: {
     type: Sequelize.STRING
   },
   role: {

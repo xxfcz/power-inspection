@@ -66,12 +66,14 @@
   "users": [
     {
       "id": 1,
+      "account": "张三",
       "name": "张三",
       "workshopId": 2,
       "password": "123456",
       "role": "re"
     },
     {
+      "account": "李四",
       "name": "李四",
       "id": 2,
       "workshopId": 2,
@@ -79,6 +81,7 @@
       "role": "ws"
     },
     {
+      "account": "王五",
       "name": "王五",
       "id": 3,
       "workshopId": 3,
@@ -87,6 +90,7 @@
     },
     {
       "id": 4,
+      "account": "肖雪峰",
       "name": "肖雪峰",
       "workshopId": 5,
       "password": "123456",
@@ -94,6 +98,7 @@
     },
     {
       "id": 5,
+      "account": "HH",
       "name": "HH",
       "workshopId": 1,
       "password": "123456",

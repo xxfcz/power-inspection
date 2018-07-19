@@ -5,15 +5,13 @@ const bodyParser = require('body-parser')
 const _ = require('lodash')
 const bytes = require('bytes')
 const Sequelize = require('sequelize')
+const expressJWT = require('express-jwt')
 
-const config = require('../config')
+const config = require('./config')
 const routes = require('./routes')
 const sequelize = require('./db')
 
-const MAX_BODY_SIZE =
-  process.env.NODE_ENV === 'production'
-    ? config.build.max_body_size
-    : config.dev.max_body_size
+const MAX_BODY_SIZE = config.max_body_size
 
 //const app = jsonServer.create()
 /* static files ----------------------------------------------------- */
@@ -27,6 +25,14 @@ app.use(bodyParser.urlencoded({ extended: false, limit: MAX_BODY_SIZE }))
 app.use(
   bodyParser.json({
     limit: MAX_BODY_SIZE
+  })
+)
+
+app.use(
+  expressJWT({
+    secret: config.tokenSecret
+  }).unless({
+    path: ['/api/users/token'] //除了这些地址，其他的URL都需要验证
   })
 )
 
@@ -48,6 +54,12 @@ app.use(function(req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use(function(err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+      //  这个需要根据自己的业务逻辑来处理（ 具体的err值 请看下面）
+      res.status(401).send('Invalid token')
+      next()
+      return
+    }
     res.status(err.status || 500)
     res.send({
       url: req.originalUrl,
@@ -60,6 +72,12 @@ if (app.get('env') === 'development') {
 // no stacktraces leaked to user
 else
   app.use(function(err, req, res, next) {
+    if (err.name === 'UnauthorizedError') {
+      //  这个需要根据自己的业务逻辑来处理（ 具体的err值 请看下面）
+      res.status(401).send('Invalid token')
+      next()
+      return
+    }
     res.status(err.status || 500)
     res.send({
       url: req.originalUrl,
@@ -68,11 +86,14 @@ else
     })
   })
 
-sequelize.authenticate().then(() => {
-  app.listen(3002, () => {
-    console.log(`NODE_ENV=${app.get('env')}`)
-    console.log('Express Server is running on 3002...')
+sequelize
+  .authenticate()
+  .then(() => {
+    app.listen(3002, () => {
+      console.log(`NODE_ENV=${app.get('env')}`)
+      console.log('Express Server is running on 3002...')
+    })
   })
-}).catch(err => {
-  console.error('Database error:', err)
-})
+  .catch(err => {
+    console.error('Database error:', err)
+  })
