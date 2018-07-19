@@ -53,6 +53,8 @@ export default {
     loadWorkshops() {
       this.$axios.get('/api/workshops').then(r => {
         this.workshops = r.data
+      }).catch(ex => {
+        alert('取车间列表时出错：' + ex)
       })
     },
 
