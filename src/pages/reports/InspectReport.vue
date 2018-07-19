@@ -68,7 +68,7 @@
             <td>{{i.device}}</td>
             <td>{{i.deviceStatus}}</td>
             <td>{{i.fault || '无'}}</td>
-            <td>{{i.createTime | datetime}}</td>
+            <td>{{i.time | datetime}}</td>
             <td>{{i.user}}</td>
             <td>{{i.disposalStatus}}</td>
           </tr>
