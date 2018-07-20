@@ -57,6 +57,7 @@ const postInspect = async (req, res, next) => {
       return
     }
     // 保存巡检记录到数据库
+    rec.id = null
     let r2 = await Inspect.create(rec)
     res.send(r2)
   } catch (err) {
