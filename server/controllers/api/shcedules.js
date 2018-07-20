@@ -12,7 +12,8 @@ const {
   Section,
   Device,
   Schedule,
-  ScheduleItem
+  ScheduleItem,
+  Inspect
 } = require('../../models')
 const xutils = require('../../xutils')
 
@@ -140,6 +141,20 @@ router.get('/user/:uid/todo', async (req, res) => {
       devices.push(d)
     })
   })
+
+  // 今天已完成的巡检
+  let inspects = await Inspect.findAll({
+    where: {
+      time: {
+        [Op.gte]: moment().toDate(),
+        [Op.lte]: moment()
+          .add(1, 'day')
+          .toDate()
+      },
+      
+    }
+  })
+  // 去掉已完成巡检的设备
 
   //attachUsers(items)
   res.send({

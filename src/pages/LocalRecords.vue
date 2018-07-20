@@ -6,16 +6,12 @@
       <div v-if="item.percent">{{item.percent}}</div>
       <div style="color:red" v-if="item.error">{{item.error}}</div>
       <dl>
-        <dt>车间：</dt>
-        <dd>{{item.r.workshop}}</dd>
-      </dl>
-      <dl>
         <dt>区段：</dt>
-        <dd>{{item.r.section}}</dd>
+        <dd>{{item.r.sectionName}}</dd>
       </dl>
       <dl>
         <dt>设备：</dt>
-        <dd>{{item.r.device}}</dd>
+        <dd>{{item.r.deviceName}}</dd>
       </dl>
       <dl>
         <dt>巡检时间：</dt>
@@ -27,7 +23,7 @@
       </dl>
       <dl>
         <dt>巡检人：</dt>
-        <dd>{{item.r.user}}</dd>
+        <dd>{{item.r.userName}}</dd>
       </dl>
       <dl>
         <dt>设备状态：</dt>

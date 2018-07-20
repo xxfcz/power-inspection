@@ -55,7 +55,6 @@
           <tr>
             <th>区段</th>
             <th>设备</th>
-            <th>状态</th>
             <th>缺陷</th>
             <th>巡检时间</th>
             <th>巡检人</th>
@@ -64,12 +63,11 @@
         </thead>
         <tbody>
           <tr v-for="i in inspects" @click="selectedInspect=i" :class="{selected: selectedInspect===i}">
-            <td>{{i.section}}</td>
-            <td>{{i.device}}</td>
-            <td>{{i.deviceStatus}}</td>
+            <td>{{i.section.name}}</td>
+            <td>{{i.device.name}}</td>
             <td>{{i.fault || '无'}}</td>
             <td>{{i.time | datetime}}</td>
-            <td>{{i.user}}</td>
+            <td>{{i.user.name}}</td>
             <td>{{i.disposalStatus}}</td>
           </tr>
         </tbody>
@@ -164,9 +162,7 @@ export default {
   methods: {
     loadWorkshops() {
       this.$axios.get('/api/workshops').then(r => {
-        this.workshops = r.data.filter(e => {
-          return e.id > 1
-        })
+        this.workshops = r.data
         if (this.workshops.length > 0) {
           this.selectedWorkshop = this.workshops[0]
         }
@@ -178,7 +174,7 @@ export default {
       this.$axios
         .get('/api/inspects', {
           params: {
-            w: this.selectedWorkshop.name,
+            w: this.selectedWorkshop.id,
             d1: this.startDate,
             d2: this.endDate,
             n: this.normality,
@@ -191,7 +187,7 @@ export default {
     },
     onExport() {
       let token = localStorage.getItem('token')
-      let url = `/api/inspects?w=${this.selectedWorkshop.name}&ds=${
+      let url = `/api/inspects?w=${this.selectedWorkshop.id}&ds=${
         this.disposalStatus
       }
         &d1=${this.startDate}&d2=${this.endDate}&_export=true&_token=${token}`

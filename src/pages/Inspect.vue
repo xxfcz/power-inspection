@@ -204,17 +204,21 @@ export default {
       this.$db.inspects
         .add({
           id: dev.id,
-          workshop: this.user.workshop.name,
-          section: dev.section.name,
-          device: dev.name,
           deviceStatus: this.deviceStatus,
           fault: fault,
           images: this.images,
           longitude: this.longitude,
           latitude: this.latitude,
-          user: this.user.name,
-          time: new Date()
-        })
+          time: new Date(),
+          workshopId: this.user.workshopId,
+          sectionId: dev.sectionId,
+          deviceId: dev.id,
+          userId: this.user.id,
+          workshopName: this.user.workshop.name,
+          sectionName: dev.section.name,
+          deviceName: dev.name,
+          userName: this.user.name
+       })
         .then(e => {
           this.$db.tasks.update(dev.id, { finished: true })
           alert('保存成功！')

@@ -6,7 +6,7 @@
       <img :src="r.imageData" style="float:right;max-width:25%;max-height:150px">
       <dl>
         <dt>设备：</dt>
-        <dd>{{ r.device }}</dd>
+        <dd>{{ r.device.name }}</dd>
       </dl>
       <dl>
         <dt>巡检时间：</dt>
@@ -66,11 +66,11 @@ export default {
         .get('/api/inspects')
         .then(r => {
           this.records = r.data
-          this.records.forEach(e => {
-            e.createTime = new Date(e.createTime)
-          })
+          // this.records.forEach(e => {
+          //   e.createTime = new Date(e.createTime)
+          // })
           this.records.sort((a, b) => {
-            return b.createTime - a.createTime
+            return b.time - a.time
           })
         })
         .catch(error => {

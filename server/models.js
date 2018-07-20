@@ -41,10 +41,6 @@ Device.belongsTo(Section)
 Section.hasMany(Device)
 
 const Inspect = sequelize.define('inspect', {
-  workshop: { type: Sequelize.STRING },
-  section: { type: Sequelize.STRING },
-  device: { type: Sequelize.STRING },
-  user: { type: Sequelize.STRING },
   deviceStatus: { type: Sequelize.STRING },
   fault: { type: Sequelize.STRING },
   images: { type: Sequelize.JSON },
@@ -58,6 +54,11 @@ const Inspect = sequelize.define('inspect', {
     defaultValue: 'none'
   }
 })
+
+Inspect.belongsTo(User)
+Inspect.belongsTo(Device)
+Inspect.belongsTo(Section)
+Inspect.belongsTo(Workshop)
 
 const Schedule = sequelize.define('schedule', {
   name: Sequelize.DataTypes.STRING,

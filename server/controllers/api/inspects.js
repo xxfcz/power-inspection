@@ -75,9 +75,9 @@ router.get('/', async (req, res) => {
   let user = req.user.data
   // qs参数 wid: 车间ID
   if (user.workshopId > 1) {
-    where.workshop = user.workshop.name
+    where.workshopId = user.workshopId
   } else if (req.query.w) {
-    where.workshop = req.query.w
+    where.workshopId = req.query.w
   }
   // qs参数：设备状态
   let n = req.query.n
@@ -103,20 +103,39 @@ router.get('/', async (req, res) => {
 
   // 取巡检记录
   let inspects = await Inspect.findAll({
-    where
+    where,
+    include: [
+      {
+        model: User,
+        attributes: ['name']
+      },
+      {
+        model: Device,
+        attributes: ['name']
+      },
+      {
+        model: Section,
+        attributes: ['name']
+      },
+    ]
   })
-  if (_export) require('../../xutils').exportXlsx(res, inspects.map(e => {
-    return {
-      id: e.id,
-      区间: e.section,
-      设备: e.device,
-      设备状态: e.deviceStatus,
-      缺陷: e.fault,
-      巡检人: e.user,
-      巡检时间: e.time,
-      销号状态: xutils.getDisposalStatus(e.disposalStatus)
-    }
-  }), '巡检记录')
+  if (_export)
+    require('../../xutils').exportXlsx(
+      res,
+      inspects.map(e => {
+        return {
+          id: e.id,
+          区间: e.section.name,
+          设备: e.device.name,
+          设备状态: e.deviceStatus,
+          缺陷: e.fault,
+          巡检人: e.user.name,
+          巡检时间: e.time,
+          销号状态: xutils.getDisposalStatus(e.disposalStatus)
+        }
+      }),
+      '巡检记录'
+    )
   else res.send(inspects)
 })
 
