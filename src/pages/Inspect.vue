@@ -140,12 +140,12 @@ export default {
           )
           // 添加到显示用的设备列表
           t.distance = parseInt(dist)
-          t.disabled = dist > DIST_LIMIT
-          this.devices.push(t)
-          // 按距离升序排列
-          this.devices.sort((a, b) => {
-            return a.distance - b.distance
-          })
+          t.disabled = dist > DIST_LIMIT || t.finished
+          if (!t.disabled) this.devices.push(t)
+        })
+        // 按距离升序排列
+        this.devices.sort((a, b) => {
+          return a.distance - b.distance
         })
       })
     },
@@ -216,7 +216,7 @@ export default {
           time: new Date()
         })
         .then(e => {
-          this.$db.tasks.update(dev.id, {finished: true})
+          this.$db.tasks.update(dev.id, { finished: true })
           alert('保存成功！')
           this.$router.go(-1)
         })
