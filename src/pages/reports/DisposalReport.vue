@@ -49,12 +49,12 @@
         </thead>
         <tbody>
           <tr v-for="d in disposals" @click="selectedDisposal=d" :class="{selected: selectedDisposal===d}">
-            <td>{{d.inspect.section}}</td>
-            <td>{{d.inspect.device}}</td>
+            <td>{{d.inspect.section.name}}</td>
+            <td>{{d.inspect.device.name}}</td>
             <td>{{d.inspect.deviceStatus == 'normal'? '正常': '异常'}}</td>
             <td>{{d.inspect.fault || '无'}}</td>
             <td>{{d.inspect.time | datetime}}</td>
-            <td>{{d.inspect.user}}</td>
+            <td>{{d.inspect.user.name}}</td>
           </tr>
         </tbody>
       </table>

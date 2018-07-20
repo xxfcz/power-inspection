@@ -16,7 +16,10 @@ const xutils = require('../../xutils')
 const MAX_BODY_SIZE = config.max_body_size
 
 router.get('/', async (req, res) => {
-  let w = req.query.w
+  let user = req.user.data
+  let w
+  if (user.workshopId > 1) w = user.workshopId
+  else if (req.query.w) w = req.query.w
   let where = {}
   if (req.query) {
     let s = req.query.s
@@ -46,23 +49,44 @@ router.get('/', async (req, res) => {
           id: w
         }
       },
-      Inspect
+      {
+        model: Inspect,
+        include: [
+          {
+            model: User,
+            attributes: ['name']
+          },
+          {
+            model: Device,
+            attributes: ['name']
+          },
+          {
+            model: Section,
+            attributes: ['name']
+          }
+        ]
+      }
     ],
     where
   })
 
-  if (_export) require('../xutils').exportXlsx(res, resultSet.map(e=>{
-    return {
-      id: e.id,
-      区间: e.inspect.section,
-      设备: e.inspect.device,
-      设备状态: e.inspect.deviceStatus,
-      缺陷: e.inspect.fault,
-      巡检人: e.inspect.user,
-      巡检时间: e.inspect.time,
-      销号状态: getDisposalStatus(e.disposalStatus)
-    }
-  }), '销号记录')
+  if (_export)
+    require('../xutils').exportXlsx(
+      res,
+      resultSet.map(e => {
+        return {
+          id: e.id,
+          区间: e.inspect.section.name,
+          设备: e.inspect.device.name,
+          设备状态: e.inspect.deviceStatus,
+          缺陷: e.inspect.fault,
+          巡检人: e.inspect.user.name,
+          巡检时间: e.inspect.time,
+          销号状态: getDisposalStatus(e.disposalStatus)
+        }
+      }),
+      '销号记录'
+    )
   else res.send(resultSet)
 })
 
@@ -179,8 +203,7 @@ router.post('/:id/:act/by/:uid', async (req, res) => {
 
   db.transaction(t => {
     let reason = null
-    if(act == 'rejected')
-      reason = req.body.reason
+    if (act == 'rejected') reason = req.body.reason
     return Disposal.update(
       {
         status: act,
@@ -192,31 +215,32 @@ router.post('/:id/:act/by/:uid', async (req, res) => {
         where: { id },
         transaction: t
       }
-    ).then(r1 => {
-      if(r1.length>0 && r1[0]==1) {
-        // 同步巡检记录的销号状态
-        return Inspect.update(
-          {
-            disposalStatus: act
-          },
-          {
-            where: {
-              id: disp.inspectId
+    )
+      .then(r1 => {
+        if (r1.length > 0 && r1[0] == 1) {
+          // 同步巡检记录的销号状态
+          return Inspect.update(
+            {
+              disposalStatus: act
             },
-            transaction: t
+            {
+              where: {
+                id: disp.inspectId
+              },
+              transaction: t
+            }
+          )
+          result = {
+            ok: true
           }
-        )
-        result = {
-          ok: true
         }
-        
-      }
-    }).catch(ex => {
-      res.send({
-        ok: false,
-        msg: ex.message
       })
-    })
+      .catch(ex => {
+        res.send({
+          ok: false,
+          msg: ex.message
+        })
+      })
   })
 
   //if (result && result.length > 0 && result[0] == 1)
