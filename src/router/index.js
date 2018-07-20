@@ -10,7 +10,9 @@ import Login from '@/pages/Login'
 import DeviceReport from '@/pages/reports/DeviceReport'
 import InspectReport from '@/pages/reports/InspectReport'
 import DisposalReport from '@/pages/reports/DisposalReport'
-import AddSchedule from '@/pages/AddSchedule.vue'
+import AddSchedule from '@/pages/AddSchedule'
+
+import DexieTest from '@/pages/_tests/DexieTest'
 
 Vue.use(Router)
 
@@ -25,7 +27,7 @@ export default new Router({
       path: '/inspect',
       name: 'inspect',
       component: Inspect,
-      meta:{
+      meta: {
         login: true
       }
     },
@@ -33,7 +35,7 @@ export default new Router({
       path: '/my-tasks',
       name: 'my-tasks',
       component: MyTasks,
-      meta:{
+      meta: {
         login: true
       }
     },
@@ -66,7 +68,7 @@ export default new Router({
       path: '/device-report',
       name: 'device-report',
       component: DeviceReport,
-      meta:{
+      meta: {
         login: true
       }
     },
@@ -74,7 +76,7 @@ export default new Router({
       path: '/inspect-report',
       name: 'inspect-report',
       component: InspectReport,
-      meta:{
+      meta: {
         login: true
       }
     },
@@ -82,9 +84,14 @@ export default new Router({
       path: '/disposal-report',
       name: 'disposal-report',
       component: DisposalReport,
-      meta:{
+      meta: {
         login: true
       }
+    },
+    {
+      path: '/dexie-test',
+      name: 'dexie-test',
+      component: DexieTest
     }
   ]
 })

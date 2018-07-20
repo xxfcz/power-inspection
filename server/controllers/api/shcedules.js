@@ -93,7 +93,6 @@ router.get('/:id', async (req, res) => {
 
 // 用户uid待完成的下一批任务
 router.get('/user/:uid/todo', async (req, res) => {
-  console.log(req.params)
   let uid = parseInt(req.params.uid)
   // 自今天起有任务的最近日期
   let date = await ScheduleItem.min('date', {
