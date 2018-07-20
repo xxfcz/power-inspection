@@ -5,7 +5,7 @@
     <button @click="download" :disabled="!onLine">重新下载</button>
     <span>最后更新时间：{{lastUpdateTime | moment().format('MM-DD HH:mm')}}</span>
     <ul>
-      <div v-for="task in tasks">
+      <div v-for="task in tasks" style="clear:both">
         <div>
           {{task.id}}.
           <span style="font-weight:bold">{{task.name}}</span>
@@ -13,6 +13,11 @@
         </div>
         <div style="margin-left:2em">
           坐标：{{task.longitude}},{{task.latitude}}<br> 区段：{{task.section.name}}
+        </div>
+        <div style="position:relative">
+          <div style="float:left;width:33%" v-for="i in task.images">
+            <img style="width:100%;" :src="i">
+          </div>
         </div>
       </div>
     </ul>
