@@ -203,6 +203,7 @@ export default {
       let dev = this.selectedDevice
       this.$db.inspects
         .add({
+          id: dev.id,
           workshop: this.user.workshop.name,
           section: dev.section.name,
           device: dev.name,
@@ -215,6 +216,7 @@ export default {
           time: new Date()
         })
         .then(e => {
+          this.$db.tasks.update(dev.id, {finished: true})
           alert('保存成功！')
           this.$router.go(-1)
         })

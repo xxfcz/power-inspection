@@ -57,8 +57,8 @@ Vue.config.productionTip = false
 /* database setup */
 var db = new Dexie('power-inspection')
 db.version(1).stores({
-  tasks: '++id',
-  inspects: 'device,time',
+  tasks: 'id',
+  inspects: 'id',
   config: 'name'
 })
 Vue.prototype.$db = db
