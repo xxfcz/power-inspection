@@ -112,7 +112,7 @@ export default {
             }
           })
           .then(() => {
-            this.$db.inspects.delete(item.r.device).then(() => {
+            this.$db.inspects.delete(item.r.id).then(() => {
               this.reloadInspects()
               let msg = `上传成功：${item.r.device}`
               console.info(msg)
