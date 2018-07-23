@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>添加巡检计划</h2>
+    <h2>查看巡检计划</h2>
     <div>
       <label>车间：
         <select v-model="selectedWorkshop">
@@ -29,11 +29,11 @@
 
 <script>
   export default {
-    name: "AddSchedule.vue",
+    name: "ViewSchedule.vue",
     data() {
       return {
         selectedWorkshop: null,
-        inspectDate: this.$moment().add(1,'day').format('YYYY-MM-DD'),
+        inspectDate: this.$moment().format('YYYY-MM-DD'),
         workshops: []
       }
     },

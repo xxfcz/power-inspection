@@ -10,7 +10,8 @@ import Login from '@/pages/Login'
 import DeviceReport from '@/pages/reports/DeviceReport'
 import InspectReport from '@/pages/reports/InspectReport'
 import DisposalReport from '@/pages/reports/DisposalReport'
-import AddSchedule from '@/pages/AddSchedule'
+//import AddSchedule from '@/pages/schedule/AddSchedule'
+import QuerySchedule from '@/pages/schedule/QuerySchedule'
 
 import DexieTest from '@/pages/_tests/DexieTest'
 
@@ -54,11 +55,11 @@ export default new Router({
       name: 'add-device',
       component: AddDevice
     },
-    {
-      path: '/add-schedule',
-      name: 'add-schedule',
-      component: AddSchedule
-    },
+    // {
+    //   path: '/add-schedule',
+    //   name: 'add-schedule',
+    //   component: AddSchedule
+    // },
     {
       path: '/login',
       name: 'login',
@@ -84,6 +85,14 @@ export default new Router({
       path: '/disposal-report',
       name: 'disposal-report',
       component: DisposalReport,
+      meta: {
+        login: true
+      }
+    },
+    {
+      path: '/query-schedule',
+      name: 'query-schedule',
+      component: QuerySchedule,
       meta: {
         login: true
       }

@@ -61,9 +61,9 @@ Inspect.belongsTo(Section)
 Inspect.belongsTo(Workshop)
 
 const Schedule = sequelize.define('schedule', {
-  name: Sequelize.DataTypes.STRING,
+  title: Sequelize.DataTypes.STRING,
   month: Sequelize.DataTypes.STRING,
-  type: {
+  category: {
     type: Sequelize.DataTypes.ENUM,
     values: ['monthly', 'temporary']
   }

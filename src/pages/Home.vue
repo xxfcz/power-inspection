@@ -31,6 +31,15 @@
         <button @click="clearCache">清理数据缓存</button>
       </li> -->
       <li>
+        巡检计划
+        <ul>
+          <li><router-link to="query-schedule">查询巡检计划</router-link></li>
+        </ul>
+        <!-- <ul>
+          <li><router-link to="add-schedule">新建巡检计划</li>
+        </ul> -->
+      </li>
+      <li>
         报表
         <ul>
           <li>
