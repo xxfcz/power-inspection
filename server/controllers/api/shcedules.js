@@ -55,10 +55,12 @@ router.get('/', async (req, res) => {
 
   let schedules = await Schedule.findAll({
     where,
-    include: [{
-      model: Workshop,
-      attributes: ['name']
-    }]
+    include: [
+      {
+        model: Workshop,
+        attributes: ['name']
+      }
+    ]
   })
   res.send(schedules)
 })
@@ -178,6 +180,83 @@ router.get('/user/:uid/todo', async (req, res) => {
     date,
     devices
   })
+})
+
+router.delete('/:sid/items/:iid', async (req, res) => {
+  let iid = parseInt(req.params.iid)
+  let sid = parseInt(req.params.sid)
+  let user = req.user.data
+  let schedule = await Schedule.findById(sid)
+  if (!schedule) {
+    return res.send({
+      ok: fasle,
+      msg: `指定的计划不存在：id=${sid}`
+    })
+  }
+  if (user.workshopId > 1 && user.workshopId != schedule.workshopId) {
+    res.send({
+      ok: false,
+      msg: '不能删除别人车间的计划项'
+    })
+    return
+  }
+
+  let r = await ScheduleItem.destroy({
+    where: {
+      id: iid,
+      scheduleId: sid
+    }
+  })
+  if (r > 0) {
+    res.send({
+      ok: true
+    })
+  } else {
+    res.send({
+      ok: false,
+      msg: `未能删除指定的计划详情：sid=${sid}&iid=${iid}。不存在？`
+    })
+  }
+})
+
+/**
+ * 添加计划细项
+ */
+router.post('/:sid/items/', async (req, res) => {
+  let sid = parseInt(req.params.sid)
+  let user = req.user.data
+  let schedule = await Schedule.findById(sid)
+  if (!schedule) {
+    return res.send({
+      ok: fasle,
+      msg: `指定的计划不存在：id=${sid}`
+    })
+  }
+  if (user.workshopId > 1 && user.workshopId != schedule.workshopId) {
+    res.send({
+      ok: false,
+      msg: '不能操作别人车间的计划'
+    })
+    return
+  }
+
+  let data = req.body
+  let r = await ScheduleItem.create({
+    date: data.date,
+    userIds: data.userIds,
+    sectionId: data.sectionId,
+    scheduleId: sid
+  })
+  if (r && r.id > 0) {
+    res.send({
+      ok: true
+    })
+  } else {
+    res.send({
+      ok: false,
+      msg: `未能创建指定的计划详情`
+    })
+  }
 })
 
 module.exports = router

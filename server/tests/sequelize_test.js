@@ -33,7 +33,7 @@ let {
   Disposal
 } = Model
 
-let initDb = async (force=true) => {
+let initDb = async (force = true) => {
   try {
     await sequelize.sync({ force: force })
     //await sequelize.getQueryInterface().bulkDelete('workshops')
@@ -197,23 +197,24 @@ let play6 = async () => {
 
 let play7 = async () => {
   await sequelize.transaction(async t => {
-    await Disposal.update({
-      status: 'approved'
-    },{
-      transaction: t,
-      where: {
-        inspectId: 1
-      }
-    })
-
-    let r = await Disposal.findOne(
+    await Disposal.update(
       {
+        status: 'approved'
+      },
+      {
+        transaction: t,
         where: {
           inspectId: 1
-        },
-        transaction: t
+        }
       }
     )
+
+    let r = await Disposal.findOne({
+      where: {
+        inspectId: 1
+      },
+      transaction: t
+    })
 
     console.log(r.status)
 
@@ -221,10 +222,10 @@ let play7 = async () => {
   })
 }
 
-let play8 = async()=>{
+let play8 = async () => {
   let r = await Device.findOne({
-    where:{
-      images : {
+    where: {
+      images: {
         [Op.not]: null
       }
     }
@@ -232,12 +233,42 @@ let play8 = async()=>{
   console.log(r.images)
 }
 
+let play9 = async () => {
+  let r = await ScheduleItem.findOne({
+    where:{
+      id: 8
+    },
+    include:[
+      {
+        model: Schedule,
+        where: {
+          id: 2
+        }
+      }
+    ]
+  })
+  if(r)
+    console.log(r.get(PLAIN))
+  else
+    console.log('NONE')
+}
+
+let play10 = async() =>{
+  let r = await ScheduleItem.create({
+    date: '2018-07-19',
+    sectionId: 2,
+    scheduleId: 1,
+    userIds: [1,2]
+  })
+  console.log(JSON.stringify(r))
+}
+
 let run = async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
-    await initDb(false)
-    //await play8()
+    //await initDb(false)
+    await play10()
   } catch (err) {
     console.log('===============================================')
     console.error('run(): Error occurred:', err)

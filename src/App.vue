@@ -1,5 +1,5 @@
 <template>
-  <div id="app" style="margin-top: 8px">
+  <div id="app" style="margin-top: 8px; margin-bottom: 16px">
     <div @click="urlVisible=!urlVisible" v-if="urlVisible" style="position:fixed; bottom:0; right:0; font-size: small">{{url}}</div>
     <router-view/>
   </div>

@@ -8,10 +8,23 @@ const { User, Workshop } = require('../../models')
 router.get('/', async (req, res) => {
   let user = req.user.data
   let where = {}
-  if(user.workshopId>1) // 车间级账号，只能看本车间的职工名册
-    where.workshopId = user.workshopId
-  else if(req.query.wid)
-    where.workshopId = req.query.wid
+  // qs参数 w 车间ID
+  if (req.query.w) {
+    let w = parseInt(req.query.w)
+    // 段账号可查看各车间数据；车间账号只能查看本车间数据
+    if (user.workshopId == 1 || w == user.workshopId) {
+      where.workshopId = w
+    } else {
+      // 车间账号想查看其他车间的数据？没门
+      res.send([])
+      return
+    }
+  } else {
+    // 没有指定参数w
+    if (user.workshopId > 1) {
+      where.workshopId = user.workshopId
+    }
+  }
   let users = await User.findAll({
     where,
     include: Workshop,
