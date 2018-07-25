@@ -26,7 +26,7 @@
         <input type="radio" v-model="category" value="temporary">临时计划
       </label>
     </div>
-    <div>
+    <div style="text-align: center">
       <button @click="query">查询</button>
     </div>
 
@@ -58,7 +58,7 @@
         <button @click="deleteItem(i)" style="color:red">删除</button>
       </div>
       <div>
-        <span class="label">区段</span>
+        <span class="label">区间</span>
         <span>{{i.section.name}}</span>
       </div>
       <div>
@@ -71,9 +71,9 @@
       </div>
     </div>
     <div style="text-align:center;border-top: solid blue 1px;">
-      <button @click="addItem">添加</button>
+      <button @click="addItem">添加更多区间</button>
     </div>
-    <schedule-item ref="dialog" :sections="availableSections" @ok="saveItem($event)"></schedule-item>
+    <schedule-item ref="dialog" :sections="availableSections" :users="users" @ok="saveItem($event)"></schedule-item>
   </div>
 </template>
 
@@ -122,10 +122,14 @@ export default {
       items: [],
       isAdding: false,
       allSections: [],
-      availableSections: []
+      availableSections: [],
+      users: []
     }
   },
   mounted() {
+    this.$axios.get('/api/users').then(r => {
+      this.users = r.data
+    })
     this.$axios.get('/api/sections').then(r => {
       this.allSections = r.data
     })
@@ -136,6 +140,8 @@ export default {
   },
   methods: {
     query() {
+      this.isAdding = false
+      this.selectedSchedule = null
       this.$axios
         .get('/api/schedules', {
           params: {
