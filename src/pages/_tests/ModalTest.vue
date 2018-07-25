@@ -10,6 +10,11 @@
       传入的参数值：{{dlg2_params}}
     </modal>
     <button @click="showDialog3">对话框</button>
+    <button @click="showDialog4">动态：使用组件</button>
+    <button @click="showDialog5">嵌入组件</button>
+    <modal name="dialog5" @before-open="dialog5_before_open">
+      <hello :msg="msg" :title="title" @ok="dialog5_ok"></hello>
+    </modal>
   </div>
 </template>
 
@@ -22,7 +27,9 @@ export default {
   },
   data() {
     return {
-      dlg2_params: ''
+      dlg2_params: '',
+      msg: '',
+      title: '',
     }
   },
   methods: {
@@ -60,6 +67,41 @@ export default {
           }
         ]
       })
+    },
+    showDialog4() {
+      this.$modal.show(
+        Hello,
+        {
+          msg: '从外面传入的文本',
+          ok: event => {
+            console.log('ok:', event)
+          }
+        },
+        {
+          height: 'auto'
+        },
+        {
+          closed: event => {
+            console.log('closed:', event)
+          }
+        }
+      )
+    },
+    showDialog5() {
+      this.$modal.show('dialog5', { msg: '动态文字', title: '标题' })
+    },
+    dialog5_before_open(evt){
+      this.msg = evt.params.msg
+      this.title = evt.params.title
+    },
+    dialog5_ok(age){
+      console.log(age)
+      if(age>=18){
+        this.$modal.hide('dialog5')
+      }
+      else{
+        alert('年龄不能小于18岁！')
+      }
     }
   }
 }

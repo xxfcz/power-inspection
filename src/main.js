@@ -49,7 +49,7 @@ axios.interceptors.response.use(
   }
 )
 
-Vue.use(VModal, { dialog: true })
+Vue.use(VModal, { dialog: true, dynamic: true, injectModalsContainer: true })
 Vue.use(VueMomentLib)
 Vue.prototype.$xutils = xutils
 Vue.prototype.$axios = axios
