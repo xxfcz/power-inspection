@@ -14,6 +14,7 @@ import DisposalReport from '@/pages/reports/DisposalReport'
 import QuerySchedule from '@/pages/schedule/QuerySchedule'
 
 import DexieTest from '@/pages/_tests/DexieTest'
+import ModalTest from '@/pages/_tests/ModalTest'
 
 Vue.use(Router)
 
@@ -101,6 +102,11 @@ export default new Router({
       path: '/dexie-test',
       name: 'dexie-test',
       component: DexieTest
+    },
+    {
+      path: '/modal-test',
+      name: 'modal-test',
+      component: ModalTest
     }
   ]
 })
