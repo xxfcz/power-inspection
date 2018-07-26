@@ -1,30 +1,28 @@
 // 显示、编辑一个计划细项：区段、日期、人员
 <template>
-  <div v-show="visible">
-    <div class="detail">
-      <div>
-        <label class="label">区间：</label>
-        <select v-model="section">
-          <option v-for="s in sections" :value="s">{{s.name}}</option>
-        </select>
-      </div>
-      <div>
-        <label class="label">日期：</label>
-        <input type="date" v-model="date">
-      </div>
-      <div>
-        <label class="label">人员：</label>
-        <select v-model="user1">
-          <option v-for="u in users" :value="u">{{u.name}}</option>
-        </select>
-        <select v-model="user2">
-          <option v-for="u in users" :value="u">{{u.name}}</option>
-        </select>
-      </div>
-      <div style="position: absolute; top: 6px; right: 12px; text-align:center">
-        <button @click="ok()">保存</button><br/>
-        <button @click="hide()">放弃</button>
-      </div>
+  <div class="detail">
+    <div>
+      <label class="label">区间：</label>
+      <select v-model="sectionId_">
+        <option v-for="s in sections" :value="s.id">{{s.name}}</option>
+      </select>
+    </div>
+    <div>
+      <label class="label">日期：</label>
+      <input type="date" v-model="date_">
+    </div>
+    <div>
+      <label class="label">人员：</label>
+      <select v-model="userId1">
+        <option v-for="u in users" :value="u.id">{{u.name}}</option>
+      </select>
+      <select v-model="userId2">
+        <option v-for="u in users" :value="u.id">{{u.name}}</option>
+      </select>
+    </div>
+    <div style="position: absolute; top: 6px; right: 12px; text-align:center">
+      <button @click="ok()">保存</button><br/>
+      <button @click="cancel()">放弃</button>
     </div>
   </div>
 </template>
@@ -44,7 +42,7 @@
 }
 button {
   margin-right: 16px;
-  margin-top: 8px;
+  margin-bottom: 8px;
 }
 </style>
 
@@ -52,46 +50,45 @@ button {
 export default {
   name: 'ScheduleItem',
   /**
-   * sch-item: {
+   * schItem: {
    *  sectionId: 7,
    *  date: '2018-07-25',
    *  users: [1,3]
    * }
    */
-  props: ['sections', 'users', 'sch-item'],
+  props: ['sections', 'users', 'date', 'sectionId', 'userIds'],
   data() {
-    return {
-      date: this.$moment()
-        .add(1, 'days')
-        .format('YYYY-MM-DD'),
-      section: null,
-      user1: null,
-      user2: null,
-      visible: false
+    let o = {
+      sectionId_: this.sectionId,
+      date_: this.date
     }
-  },
-  mounted() {
-    this.loadData()
+    if(this.userIds.length>0)
+      o.userId1 = this.userIds[0]
+    if(this.userIds.length>0)
+      o.userId2 = this.userIds[1]
+
+    return o
   },
   methods: {
-    show() {
-      this.visible = true
-    },
-    hide() {
-      this.visible = false
-    },
-    loadData() {
-      // this.$axios.get('/api/users').then(r => {
-      //   this.users = r.data
-      // })
-    },
     ok() {
+        if(!this.userId1 || !this.userId2){
+          alert('请选择两个人员！')
+          return
+        }
+      if(this.userId1 == this.userId2){
+        alert('两个人员不能是同一人！')
+        return
+      }
+
       let params = {
-        sectionId: this.section.id,
-        date: this.date,
-        userIds: [this.user1.id, this.user2.id]
+        sectionId: this.sectionId_,
+        date: this.date_,
+        userIds: [this.userId1, this.userId2]
       }
       this.$emit('ok', params)
+    },
+    cancel() {
+      this.$emit('cancel')
     }
   }
 }

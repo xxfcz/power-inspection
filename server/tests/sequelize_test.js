@@ -235,10 +235,10 @@ let play8 = async () => {
 
 let play9 = async () => {
   let r = await ScheduleItem.findOne({
-    where:{
+    where: {
       id: 8
     },
-    include:[
+    include: [
       {
         model: Schedule,
         where: {
@@ -247,20 +247,24 @@ let play9 = async () => {
       }
     ]
   })
-  if(r)
-    console.log(r.get(PLAIN))
-  else
-    console.log('NONE')
+  if (r) console.log(r.get(PLAIN))
+  else console.log('NONE')
 }
 
-let play10 = async() =>{
-  let r = await ScheduleItem.create({
-    date: '2018-07-19',
-    sectionId: 2,
-    scheduleId: 1,
-    userIds: [1,2]
-  })
-  console.log(JSON.stringify(r))
+let play10 = async () => {
+  let r = await ScheduleItem.update(
+    {
+      date: '2018-07-27',
+      userIds: [1,2],
+      sectionId: 5
+    },
+    {
+      where: {
+        id: 19
+      }
+    }
+  )
+  console.log(r)
 }
 
 let run = async () => {

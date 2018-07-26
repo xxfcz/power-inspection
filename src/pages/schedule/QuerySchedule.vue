@@ -53,27 +53,32 @@
 
     <!-- 计划详情 -->
     <div v-for="i in items" class="details">
-      <div class="actions">
-        <button>修改</button><br/>
-        <button @click="deleteItem(i)" style="color:red">删除</button>
+      <div v-if="itemEdited===i">
+        <schedule-item :sections="availableSections" :users="users" @ok="updateItem($event)" @cancel="itemEdited=null" :date.sync="itemEdited.date" :sectionId.sync="itemEdited.sectionId" :userIds="itemEdited.userIds"></schedule-item>
       </div>
-      <div>
-        <span class="label">区间</span>
-        <span>{{i.section.name}}</span>
-      </div>
-      <div>
-        <span class="label">日期</span>
-        <span>{{i.date}}</span>
-      </div>
-      <div>
-        <span class="label">人员</span>
-        <span v-for="u in i.users" style="margin-right:8px">{{u.name}}</span>
+      <div v-else="itemEdited===i">
+        <div class="actions">
+          <button @click="showEditPanel(i)">修改</button><br/>
+          <button @click="deleteItem(i)" style="color:red">删除</button>
+        </div>
+        <div>
+          <span class="label">区间</span>
+          <span>{{i.section.name}}</span>
+        </div>
+        <div>
+          <span class="label">日期</span>
+          <span>{{i.date}}</span>
+        </div>
+        <div>
+          <span class="label">人员</span>
+          <span v-for="u in i.users" style="margin-right:8px">{{u.name}}</span>
+        </div>
       </div>
     </div>
     <div style="text-align:center;border-top: solid blue 1px;">
-      <button @click="addItem">添加更多区间</button>
+      <button @click="showAddPanel">添加更多区间</button>
     </div>
-    <schedule-item ref="dialog" :sections="availableSections" :users="users" @ok="saveItem($event)"></schedule-item>
+    <schedule-item v-if="itemAdded" :sections="availableSections" :users="users" @ok="addItem($event)" @cancel="itemAdded=null" :date.sync="itemAdded.date" :sectionId.sync="itemAdded.sectionId" :userIds="itemAdded.userIds"></schedule-item>
   </div>
 </template>
 
@@ -123,7 +128,9 @@ export default {
       isAdding: false,
       allSections: [],
       availableSections: [],
-      users: []
+      users: [],
+      itemEdited: null,
+      itemAdded: null
     }
   },
   mounted() {
@@ -173,7 +180,7 @@ export default {
     },
 
     deleteItem(item) {
-      let s = `确实要删除区段[${item.section.name}]的计划？`
+      let s = `确实要删除计划区间 ${item.section.name} ？`
       if (!confirm(s)) return
       let url = `/api/schedules/${this.selectedSchedule.id}/items/${item.id}`
       this.$axios
@@ -190,29 +197,76 @@ export default {
         })
     },
 
-    addItem() {
+    showAddPanel() {
       // 更新可用的区段列表
       this.availableSections = this.allSections.filter(sec => {
         return !this.items.find(i => {
           return i.sectionId == sec.id
         })
       })
-      // 显示添加面板
-      this.$refs.dialog.show()
+      if (this.availableSections.length == 0) {
+        alert('没有可用的区间了')
+        return
+      }
+
+      let defUserIds=[null, null]
+      if(this.items.length>0){
+        defUserIds = this.items[this.items.length-1].userIds
+      }
+      
+      this.itemAdded = {
+        date: this.$moment().add(1, 'days').format('YYYY-MM-DD'),
+        sectionId: this.availableSections[0].id,
+        userIds: defUserIds
+      }
     },
 
-    saveItem(evt) {
-      evt.scheduleId = this.selectedSchedule.id
-      this.$refs.dialog.hide()
+    showEditPanel(item) {
+      this.availableSections = this.allSections.filter(sec => {
+        return !this.items.find(i => {
+          return i.sectionId == sec.id
+        })
+      })
+      // 加上自己的区间
+      this.availableSections.push(item.section)
+      if (this.availableSections.length == 0) {
+        alert('没有可用的区间了')
+        return
+      }
+      this.itemEdited = item
+    },
 
+    addItem(evt) {
+      evt.scheduleId = this.selectedSchedule.id
       let url = `/api/schedules/${this.selectedSchedule.id}/items`
       this.$axios
         .post(url, evt)
         .then(r => {
           if (r.data.ok) {
-            alert('保存成功')
-            this.$refs.dialog.hide()
-            reloadItems()
+            this.reloadItems().then(() => {
+              this.itemAdded = null
+              alert('保存成功')
+            })
+          } else {
+            alert('保存失败')
+          }
+        })
+        .catch(ex => {
+          alert(ex.message)
+        })
+    },
+    updateItem(evt) {
+      let url = `/api/schedules/${this.selectedSchedule.id}/items/${
+        this.itemEdited.id
+      }`
+      this.$axios
+        .put(url, evt)
+        .then(r => {
+          if (r.data.ok) {
+            this.reloadItems().then(() => {
+              this.itemEdited = null
+              alert('保存成功')
+            })
           } else {
             alert('保存失败')
           }

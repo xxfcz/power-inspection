@@ -103,6 +103,14 @@
       "workshopId": 1,
       "password": "123456",
       "role": "hq"
+    },
+    {
+      "id": 6,
+      "account": "张三2",
+      "name": "张三（2）",
+      "workshopId": 2,
+      "password": "123456",
+      "role": "re"
     }
   ],
   "devices": [

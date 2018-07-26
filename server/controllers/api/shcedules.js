@@ -67,26 +67,25 @@ router.get('/', async (req, res) => {
 
 let attachUsers = async items => {
   // 各计划项对应的用户
-  for (let x in items) {
-    let item = items[x]
-    // let sections = await Section.findAll({
-    //   where:{
-    //     id:{
-    //       [Op.in]: item.sectionIds
-    //     }
-    //   },
-    //   attributes: ['id', 'name']
-    // })
-    // item.sections = sections.map(PLAIN)
-    let users = await User.findAll({
-      where: {
-        id: {
-          [Op.in]: item.userIds
-        }
-      },
-      attributes: ['id', 'name']
-    })
-    item.users = users.map(PLAIN)
+  for (let i = 0; i < items.length; ++i) {
+    try {
+      let item = items[i]
+      let userIds = item.userIds
+      if (typeof userIds == 'string') {
+        userIds = JSON.parse(userIds)
+      }
+      let users = await User.findAll({
+        where: {
+          id: {
+            [Op.in]: userIds
+          }
+        },
+        attributes: ['id', 'name']
+      })
+      item.users = users
+    } catch (ex) {
+      continue
+    }
   }
   return items
 }
@@ -106,8 +105,8 @@ router.get('/:id', async (req, res) => {
       // }
     },
     order: ['date']
-  }).map(PLAIN)
-
+  })
+  if (items) items = items.map(PLAIN)
   items = await attachUsers(items)
   res.send(items)
 })
@@ -149,7 +148,8 @@ router.get('/user/:uid/todo', async (req, res) => {
         attributes: { exclude: ['createdAt', 'updatedAt'] }
       }
     }
-  }).map(PLAIN)
+  })
+  if (items) items = items.map(PLAIN)
 
   // 整理成设备清单
   let devices = []
@@ -222,7 +222,7 @@ router.delete('/:sid/items/:iid', async (req, res) => {
 /**
  * 添加计划细项
  */
-router.post('/:sid/items/', async (req, res) => {
+router.post('/:sid/items/', async function addItem(req, res) {
   let sid = parseInt(req.params.sid)
   let user = req.user.data
   let schedule = await Schedule.findById(sid)
@@ -254,7 +254,71 @@ router.post('/:sid/items/', async (req, res) => {
   } else {
     res.send({
       ok: false,
-      msg: `未能创建指定的计划详情`
+      msg: `未能创建指定的计划细项`
+    })
+  }
+})
+
+/**
+ * 更新计划细项
+ */
+router.put('/:sid/items/:iid', async (req, res) => {
+  let sid = parseInt(req.params.sid)
+  let iid = parseInt(req.params.iid)
+  let user = req.user.data
+  let sch = await Schedule.findById(sid)
+  if (sch == null) {
+    res.send({
+      ok: false,
+      msg: `指定的计划不存在：sid=${sid}`
+    })
+    return
+  }
+  if (user.workshopId > 1 && user.workshopId != sch.workshopId) {
+    res.send({
+      ok: false,
+      msg: '不能操作别人车间的计划'
+    })
+    return
+  }
+
+  let schItem = await ScheduleItem.findById(iid)
+  if (!schItem || schItem.scheduleId != sid) {
+    return res.send({
+      ok: false,
+      msg: `指定的计划不包含指定的细项：sid=${sid}, iid=${iid}`
+    })
+  }
+
+  let data = req.body
+  if (typeof data.userIds == 'string') data.userIds = JSON.parse(data.userIds)
+  if(!data.userIds instanceof Array || data.userIds.length<2){
+    res.send({
+      ok: false,
+      msg: 'userIds 必须是两个元素的数组'
+    })
+    return
+  }
+  let r = await ScheduleItem.update(
+    {
+      date: data.date,
+      userIds: data.userIds,
+      sectionId: data.sectionId
+    },
+    {
+      where: {
+        id: iid
+      }
+    }
+  )
+  if (r && r.length > 0 && r[0] == 1) {
+    res.send({
+      ok: true
+    })
+  } else {
+    res.send({
+      ok: false,
+      msg: `未能更新指定的计划细项`
     })
   }
 })
