@@ -18,7 +18,7 @@ const {
 } = require('../../models')
 const xutils = require('../../xutils')
 
-router.get('/', async (req, res) => {
+router.get('/', async function getSchedules(req, res) {
   let where = {}
   let user = req.user.data
   // qs参数 w 车间ID
@@ -65,6 +65,84 @@ router.get('/', async (req, res) => {
   res.send(schedules)
 })
 
+/**
+ * 创建新计划
+ */
+router.post('/', async function postSchedule(req, res) {
+  let defMonth
+  if (moment().date() < 10) defMonth = moment().format('YYYY-MM')
+  else
+    defMonth = moment()
+      .add(1, 'months')
+      .format('YYYY-MM')
+
+  let data = {
+    workshopId: null,
+    month: defMonth,
+    category: 'monthly',
+    title: ''
+  }
+  let user = req.user.data
+  // 参数 w 车间ID
+  if (req.body.workshopId) {
+    let w = parseInt(req.body.workshopId)
+    // 段账号可操作各车间数据；车间账号只能操作本车间数据
+    if (user.workshopId == 1 || w == user.workshopId) {
+      data.workshopId = w
+    } else {
+      // 车间账号想操作其他车间的数据？没门
+      res.send({
+        ok: false,
+        msg: '不允许操作其它车间的数据'
+      })
+      return
+    }
+  } else {
+    // 没有指定参数 workshopId，则采用当前用户的所属车间
+    if (user.workshopId > 1) {
+      data.workshopId = user.workshopId
+    } else {
+      // 段级用户，创建段级计划？无意义
+      res.send({
+        ok: false,
+        msg: '新建计划所属车间不明确'
+      })
+    }
+  }
+  // 参数 month 月份 (2018.07)；若无指定，则取下一月
+  let r = (req.body.month || '').match(/\d{4}\.\d{2}/)
+  if (r) {
+    data.month = r[0]
+  }
+  // 参数 title 标题
+  if (req.body.title) {
+    data.title = req.body.title
+  }
+
+  if (req.body.category in ['monthly', 'temporary']) {
+    data.category = req.body.category
+  }
+
+  try {
+    r = await Schedule.create(data)
+    if (r) {
+      res.send({
+        ok: true
+      })
+    } else {
+      res.send({
+        ok: false,
+        msg: '创建新计划失败'
+      })
+    }
+  } catch (ex) {
+    res.send({
+      ok: false,
+      msg: ex.message
+    })
+  }
+})
+
 let attachUsers = async items => {
   // 各计划项对应的用户
   for (let i = 0; i < items.length; ++i) {
@@ -90,7 +168,7 @@ let attachUsers = async items => {
   return items
 }
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', async function getScheduleById(req, res) {
   let where = {
     scheduleId: req.params.id
   }
@@ -112,7 +190,7 @@ router.get('/:id', async (req, res) => {
 })
 
 // 用户uid待完成的下一批任务
-router.get('/user/:uid/todo', async (req, res) => {
+router.get('/user/:uid/todo', async function todo(req, res) {
   let uid = parseInt(req.params.uid)
   // 自今天起有任务的最近日期
   let date = await ScheduleItem.min('date', {
@@ -182,7 +260,7 @@ router.get('/user/:uid/todo', async (req, res) => {
   })
 })
 
-router.delete('/:sid/items/:iid', async (req, res) => {
+router.delete('/:sid/items/:iid', async function deleteScheduleItem(req, res) {
   let iid = parseInt(req.params.iid)
   let sid = parseInt(req.params.sid)
   let user = req.user.data
@@ -222,7 +300,7 @@ router.delete('/:sid/items/:iid', async (req, res) => {
 /**
  * 添加计划细项
  */
-router.post('/:sid/items/', async function addItem(req, res) {
+router.post('/:sid/items/', async function postScheduleItem(req, res) {
   let sid = parseInt(req.params.sid)
   let user = req.user.data
   let schedule = await Schedule.findById(sid)
@@ -262,7 +340,7 @@ router.post('/:sid/items/', async function addItem(req, res) {
 /**
  * 更新计划细项
  */
-router.put('/:sid/items/:iid', async (req, res) => {
+router.put('/:sid/items/:iid', async function putScheduleItem(req, res) {
   let sid = parseInt(req.params.sid)
   let iid = parseInt(req.params.iid)
   let user = req.user.data
@@ -292,7 +370,7 @@ router.put('/:sid/items/:iid', async (req, res) => {
 
   let data = req.body
   if (typeof data.userIds == 'string') data.userIds = JSON.parse(data.userIds)
-  if(!data.userIds instanceof Array || data.userIds.length<2){
+  if (!data.userIds instanceof Array || data.userIds.length < 2) {
     res.send({
       ok: false,
       msg: 'userIds 必须是两个元素的数组'

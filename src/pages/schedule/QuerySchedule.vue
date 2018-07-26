@@ -10,12 +10,12 @@
     </div>
     <div>
       <label>月份：
-        <input type="text" v-model="month">
+        <input type="month" v-model.trim="month">
       </label>
     </div>
     <div>
       <label>标题：
-        <input type="text" v-model="title">
+        <input type="text" v-model.trim="title">
       </label>
     </div>
     <div>类型：
@@ -28,6 +28,7 @@
     </div>
     <div style="text-align: center">
       <button @click="query">查询</button>
+      <button @click="createSchedule">创建新计划</button>
     </div>
 
     <div style="overflow-x:scroll">
@@ -75,8 +76,10 @@
         </div>
       </div>
     </div>
-    <div style="text-align:center;border-top: solid blue 1px;">
+    <div v-if="selectedSchedule && (!items || items.length==0)">该计划没有细项。</div>
+    <div style="text-align:center;border-top: solid blue 1px;" v-show="selectedSchedule">
       <button @click="showAddPanel">添加更多区间</button>
+      <button @click="deleteSchedule">删除该计划</button>
     </div>
     <schedule-item v-if="itemAdded" :sections="availableSections" :users="users" @ok="addItem($event)" @cancel="itemAdded=null" :date.sync="itemAdded.date" :sectionId.sync="itemAdded.sectionId" :userIds="itemAdded.userIds"></schedule-item>
   </div>
@@ -108,7 +111,6 @@ button {
 }
 </style>
 
-
 <script>
 import ScheduleItem from '@/components/ScheduleItem'
 
@@ -118,7 +120,7 @@ export default {
   data() {
     return {
       selectedWorkshop: null,
-      month: this.$moment().format('YYYY.MM'),
+      month: this.$moment().format('YYYY-MM'),
       category: 'monthly',
       title: '',
       workshops: [],
@@ -147,9 +149,11 @@ export default {
   },
   methods: {
     query() {
-      this.isAdding = false
+      this.itemEdited = null
+      this.itemAdded = null
       this.selectedSchedule = null
-      this.$axios
+      this.items = []
+      return this.$axios
         .get('/api/schedules', {
           params: {
             w: this.selectedWorkshop.id,
@@ -167,6 +171,12 @@ export default {
     },
 
     reloadItems() {
+      this.items = []
+      if (!this.selectedSchedule)
+        return new Promise((resolve, reject) => {
+          resolve(true)
+        })
+
       return this.$axios
         .get('/api/schedules/' + this.selectedSchedule.id)
         .then(r => {
@@ -177,6 +187,49 @@ export default {
     select(sch) {
       this.selectedSchedule = sch
       this.reloadItems()
+    },
+
+    deleteSchedule(){
+      if(!confirm('确定要删除该计划吗？')) return
+      
+    },
+
+    createSchedule() {
+      if (!/\d{4}\.\d{2}/.test(this.month)) {
+        return alert('请输入正确格式的年月，例如 2018.09')
+      }
+      let data = {
+        workshopId: this.selectedWorkshop.id,
+        month: this.month,
+        category: this.category,
+        title: this.title
+      }
+      if (data.title == '') {
+        switch (data.category) {
+          case 'monthly':
+            data.title = data.month + '月度计划'
+            break
+          case 'temporary':
+            data.title = data.month + '临时计划'
+            break
+          default:
+            data.title = data.month + ' ' + data.category
+            break
+        }
+      }
+      this.$axios
+        .post('/api/schedules', data)
+        .then(r => {
+          console.log(r.data)
+          if (r.data.ok) {
+            alert('创建成功')
+            this.query()
+          } else alert('创建失败：' + r.data.msg)
+        })
+        .catch(ex => {
+          console.error(ex)
+          alert(ex.message || ex)
+        })
     },
 
     deleteItem(item) {
@@ -209,13 +262,15 @@ export default {
         return
       }
 
-      let defUserIds=[null, null]
-      if(this.items.length>0){
-        defUserIds = this.items[this.items.length-1].userIds
+      let defUserIds = [null, null]
+      if (this.items.length > 0) {
+        defUserIds = this.items[this.items.length - 1].userIds
       }
-      
+
       this.itemAdded = {
-        date: this.$moment().add(1, 'days').format('YYYY-MM-DD'),
+        date: this.$moment()
+          .add(1, 'days')
+          .format('YYYY-MM-DD'),
         sectionId: this.availableSections[0].id,
         userIds: defUserIds
       }
