@@ -3,7 +3,7 @@ const router = express.Router()
 const { User, Section, Device } = require('../../models')
 const xutils = require('../../xutils')
 
-router.get('/', async (req, res) => {
+router.get('/', async function queryDevices(req, res) {
   let _export = false
   let user = req.user.data
   let where = {}
@@ -38,6 +38,32 @@ router.get('/', async (req, res) => {
       '设备清单'
     )
   else res.send(devices)
+})
+
+router.put('/:id', function updateDevice(req, res) {
+  Device.update(req.body, {
+    where: {
+      id: req.params.id
+    }
+  })
+    .then(r => {
+      if (r[0] == 1) {
+        res.send({
+          ok: true
+        })
+      } else {
+        res.send({
+          ok: false,
+          msg: '更新失败！'
+        })
+      }
+    })
+    .catch(ex => {
+      res.send({
+        ok: false,
+        msg: ex.message || ex
+      })
+    })
 })
 
 module.exports = router
