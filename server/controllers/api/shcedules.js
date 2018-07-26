@@ -110,7 +110,7 @@ router.post('/', async function postSchedule(req, res) {
     }
   }
   // 参数 month 月份 (2018.07)；若无指定，则取下一月
-  let r = (req.body.month || '').match(/\d{4}\.\d{2}/)
+  let r = (req.body.month || '').match(/\d{4}\-\d{2}/)
   if (r) {
     data.month = r[0]
   }
@@ -259,6 +259,42 @@ router.get('/user/:uid/todo', async function todo(req, res) {
     devices
   })
 })
+
+router.delete('/:id', async function deleteSchedule(req, res) {
+  let id = parseInt(req.params.id)
+  let user = req.user.data
+  let schedule = await Schedule.findById(id)
+  if (!schedule) {
+    return res.send({
+      ok: fasle,
+      msg: `指定的计划不存在：id=${id}`
+    })
+  }
+  if (user.workshopId > 1 && user.workshopId != schedule.workshopId) {
+    res.send({
+      ok: false,
+      msg: '不能删除别人车间的计划'
+    })
+    return
+  }
+
+  let r = await Schedule.destroy({
+    where: {
+      id: id
+    }
+  })
+  if (r > 0) {
+    res.send({
+      ok: true
+    })
+  } else {
+    res.send({
+      ok: false,
+      msg: `未能删除指定的计划：id=${id}。不存在？`
+    })
+  }
+})
+
 
 router.delete('/:sid/items/:iid', async function deleteScheduleItem(req, res) {
   let iid = parseInt(req.params.iid)

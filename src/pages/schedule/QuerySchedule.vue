@@ -189,14 +189,28 @@ export default {
       this.reloadItems()
     },
 
-    deleteSchedule(){
-      if(!confirm('确定要删除该计划吗？')) return
-      
+    deleteSchedule() {
+      if (!this.selectedSchedule) return
+      if (!confirm('确定要删除该计划吗？')) return
+      this.$axios
+        .delete(`/api/schedules/${this.selectedSchedule.id}`)
+        .then(r => {
+          if (r.data.ok) {
+            this.query().then(() => {
+              alert('删除成功！')
+            })
+          } else {
+            alert(r.data.msg)
+          }
+        })
+        .catch(ex => {
+          alert('内部错误：' + (ex.message || ex))
+        })
     },
 
     createSchedule() {
-      if (!/\d{4}\.\d{2}/.test(this.month)) {
-        return alert('请输入正确格式的年月，例如 2018.09')
+      if (!/\d{4}\-\d{2}/.test(this.month)) {
+        return alert('请输入正确格式的年月，例如 2018-09')
       }
       let data = {
         workshopId: this.selectedWorkshop.id,
