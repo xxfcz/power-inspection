@@ -28,7 +28,12 @@
     </div>
     <div style="text-align: center">
       <button @click="query">查询</button>
-      <button @click="createSchedule">创建新计划</button>
+      <button @click="cloneSchedule" v-if="selectedSchedule">
+        复制为新计划
+      </button>
+      <button @click="createSchedule" v-else="selectedSchedule">
+        新建空白计划
+      </button>
     </div>
 
     <div style="overflow-x:scroll">
@@ -196,9 +201,7 @@ export default {
         .delete(`/api/schedules/${this.selectedSchedule.id}`)
         .then(r => {
           if (r.data.ok) {
-            this.query().then(() => {
-              alert('删除成功！')
-            })
+            this.query()
           } else {
             alert(r.data.msg)
           }
@@ -236,9 +239,50 @@ export default {
         .then(r => {
           console.log(r.data)
           if (r.data.ok) {
-            alert('创建成功')
             this.query()
           } else alert('创建失败：' + r.data.msg)
+        })
+        .catch(ex => {
+          console.error(ex)
+          alert(ex.message || ex)
+        })
+    },
+
+    cloneSchedule() {
+      if (!/\d{4}\-\d{2}/.test(this.month)) {
+        return alert('请输入正确格式的年月，例如 2018-09')
+      }
+      let msg = `确定要把选中的计划复制到 ${this.month} 的 ${
+        this.category
+      } 计划吗？`
+      if (!confirm(msg)) return
+
+      let data = {
+        workshopId: this.selectedWorkshop.id,
+        month: this.month,
+        category: this.category,
+        title: this.title
+      }
+      if (data.title == '') {
+        switch (data.category) {
+          case 'monthly':
+            data.title = data.month + '月度计划'
+            break
+          case 'temporary':
+            data.title = data.month + '临时计划'
+            break
+          default:
+            data.title = data.month + ' ' + data.category
+            break
+        }
+      }
+      this.$axios
+        .post(`/api/schedules/${this.selectedSchedule.id}/clone`, data)
+        .then(r => {
+          console.log(r.data)
+          if (r.data.ok) {
+            this.query()
+          } else alert('复制失败：' + r.data.msg)
         })
         .catch(ex => {
           console.error(ex)

@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const express = require('express')
 const router = express.Router()
 const Sequelize = require('sequelize')
@@ -16,6 +17,7 @@ const {
   ScheduleItem,
   Inspect
 } = require('../../models')
+const db = require('../../db')
 const xutils = require('../../xutils')
 
 router.get('/', async function getSchedules(req, res) {
@@ -109,7 +111,7 @@ router.post('/', async function postSchedule(req, res) {
       })
     }
   }
-  // 参数 month 月份 (2018.07)；若无指定，则取下一月
+  // 参数 month 月份 (格式 2018-07)；若无指定，则取下一月
   let r = (req.body.month || '').match(/\d{4}\-\d{2}/)
   if (r) {
     data.month = r[0]
@@ -141,6 +143,109 @@ router.post('/', async function postSchedule(req, res) {
       msg: ex.message
     })
   }
+})
+
+/**
+ * 复制新计划
+ */
+router.post('/:id/clone', async function cloneSchedule(req, res) {
+  let defMonth
+  if (moment().date() < 10) defMonth = moment().format('YYYY-MM')
+  else
+    defMonth = moment()
+      .add(1, 'months')
+      .format('YYYY-MM')
+
+  let data = {
+    workshopId: null,
+    month: defMonth,
+    category: 'monthly',
+    title: ''
+  }
+  let user = req.user.data
+  // 参数 w 车间ID
+  if (req.body.workshopId) {
+    let w = parseInt(req.body.workshopId)
+    // 段账号可操作各车间数据；车间账号只能操作本车间数据
+    if (user.workshopId == 1 || w == user.workshopId) {
+      data.workshopId = w
+    } else {
+      // 车间账号想操作其他车间的数据？没门
+      res.send({
+        ok: false,
+        msg: '不允许操作其它车间的数据'
+      })
+      return
+    }
+  } else {
+    // 没有指定参数 workshopId，则采用当前用户的所属车间
+    if (user.workshopId > 1) {
+      data.workshopId = user.workshopId
+    } else {
+      // 段级用户，创建段级计划？无意义
+      res.send({
+        ok: false,
+        msg: '新建计划所属车间不明确'
+      })
+    }
+  }
+  // 参数 month 月份 (格式 2018-07)；若无指定，则取下一月
+  let r = (req.body.month || '').match(/(\d{4})\-(\d{2})/)
+  let m
+  if (r) {
+    data.month = r[0]
+    m = parseInt(r[2])
+  }
+  // 参数 title 标题
+  if (req.body.title) {
+    data.title = req.body.title
+  }
+
+  if (req.body.category in ['monthly', 'temporary']) {
+    data.category = req.body.category
+  }
+
+  let id = req.params.id
+  db.transaction(async t => {
+    r = await Schedule.create(data, { transaction: t })
+    if (!r) {
+      return res.send({
+        ok: false,
+        msg: '复制计划失败'
+      })
+    }
+
+    let protoItems = (await ScheduleItem.findAll({
+      where: {
+        scheduleId: id
+      },
+      attributes: ['date', 'sectionId', 'userIds']
+    })).map(PLAIN)
+    _.forEach(protoItems, p => {
+      p.scheduleId = r.id
+      let dt = moment(p.date)
+      dt.month(m-1)
+      p.date = dt.format('YYYY-MM-DD')
+      delete p.id
+    })
+    r = await ScheduleItem.bulkCreate(protoItems, { transaction: t })
+    res.send({
+      ok: true,
+      msg: r
+    })
+    // if (r) {
+    // } else {
+    //   res.send({
+    //     ok: false,
+    //     msg: '创建新计划失败'
+    //   })
+    // }
+  }).catch(ex => {
+    res.send({
+      ok: false,
+      msg: ex.message
+    })
+  })
 })
 
 let attachUsers = async items => {
@@ -294,7 +399,6 @@ router.delete('/:id', async function deleteSchedule(req, res) {
     })
   }
 })
-
 
 router.delete('/:sid/items/:iid', async function deleteScheduleItem(req, res) {
   let iid = parseInt(req.params.iid)
