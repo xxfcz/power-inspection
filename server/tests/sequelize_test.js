@@ -267,12 +267,34 @@ let play10 = async () => {
   console.log(r)
 }
 
+let initSchedules = async () => {
+  try{
+  let data = await fse.readFile(dbFile)
+  data = JSON.parse(data)
+    // 添加今日计划项
+    data.schedule_items.forEach(e => {
+      e.date = moment().format('YYYY-MM-DD')
+    })
+    await ScheduleItem.bulkCreate(data.schedule_items)
+    // 添加明日计划项
+    data.schedule_items.forEach(e => {
+      e.date = moment()
+        .add(1, 'day')
+        .format('YYYY-MM-DD')
+    })
+    await ScheduleItem.bulkCreate(data.schedule_items)
+  } catch (err) {
+    console.log('===============================================')
+    console.error('initSchedules(): Error occurred:', err)
+  }
+}
+
 let run = async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
     //await initDb(false)
-    await play10()
+    await initSchedules()
   } catch (err) {
     console.log('===============================================')
     console.error('run(): Error occurred:', err)
