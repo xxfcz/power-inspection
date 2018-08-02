@@ -255,7 +255,7 @@ let play10 = async () => {
   let r = await ScheduleItem.update(
     {
       date: '2018-07-27',
-      userIds: [1,2],
+      userIds: [1, 2],
       sectionId: 5
     },
     {
@@ -268,9 +268,9 @@ let play10 = async () => {
 }
 
 let initSchedules = async () => {
-  try{
-  let data = await fse.readFile(dbFile)
-  data = JSON.parse(data)
+  try {
+    let data = await fse.readFile(dbFile)
+    data = JSON.parse(data)
     // 添加今日计划项
     data.schedule_items.forEach(e => {
       e.date = moment().format('YYYY-MM-DD')
@@ -289,12 +289,34 @@ let initSchedules = async () => {
   }
 }
 
+let play11 = async () => {
+  try {
+    let r = await Disposal.findOne({
+      include: [
+        {
+          model: User,
+          as: 'requestUser'
+        },
+        {
+          model: User,
+          as: 'replyUser'
+        }
+      ]
+    })
+    if (r) console.log(r.get(PLAIN))
+    else console.log('NONE')
+  } catch (ex) {
+    console.error(ex)
+  }
+}
+
 let run = async () => {
   try {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
     //await initDb(false)
-    await initSchedules()
+    //await initSchedules()
+    await play11()
   } catch (err) {
     console.log('===============================================')
     console.error('run(): Error occurred:', err)

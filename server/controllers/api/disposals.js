@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
   let where = {}
   if (req.query) {
     let s = req.query.s
-    if (s) where.status = s
+    if (s && s != '_all_') where.status = s
     let d1 = req.query.d1
     let d2 = req.query.d2
     if (d1 && d2) {
@@ -45,9 +45,17 @@ router.get('/', async (req, res) => {
     include: [
       {
         model: Workshop,
-        where: {
-          id: w
-        }
+        attributes: ['name']
+      },
+      {
+        model: User,
+        as: 'requestUser',
+        attributes: ['name']
+      },
+      {
+        model: User,
+        as: 'replyUser',
+        attributes: ['name']
       },
       {
         model: Inspect,
@@ -70,8 +78,13 @@ router.get('/', async (req, res) => {
     where
   })
 
+  resultSet.forEach(e=>{
+    e.inspect.deviceStatus = xutils.getDeviceStatus(e.inspect.deviceStatus)
+    e.status = xutils.getDisposalStatus(e.status)
+  })
+
   if (_export)
-    require('../xutils').exportXlsx(
+    xutils.exportXlsx(
       res,
       resultSet.map(e => {
         return {
@@ -82,7 +95,7 @@ router.get('/', async (req, res) => {
           缺陷: e.inspect.fault,
           巡检人: e.inspect.user.name,
           巡检时间: e.inspect.time,
-          销号状态: getDisposalStatus(e.disposalStatus)
+          销号状态: e.status
         }
       }),
       '销号记录'

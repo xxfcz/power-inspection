@@ -107,3 +107,11 @@ exports.getDisposalStatus = s => {
     default: return s
   }
 }
+
+exports.getDeviceStatus = s => {
+  switch(s){
+    case 'normal': return '正常'
+    case 'abnormal': return '异常'
+    default: return s
+  }
+}
