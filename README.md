@@ -1,7 +1,5 @@
 # power-inspection
 
-> 电力巡检系统（H5客户端）
-
 ## Build Setup
 
 ``` bash
