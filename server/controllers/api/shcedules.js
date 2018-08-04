@@ -349,16 +349,20 @@ router.get('/user/:uid/todo', async function todo(req, res) {
   let inspects = await Inspect.findAll({
     where: {
       time: {
-        [Op.gte]: moment().toDate(),
+        [Op.gte]: moment().format('YYYY-MM-DD'),
         [Op.lte]: moment()
           .add(1, 'day')
-          .toDate()
+          .format('YYYY-MM-DD')
       }
     }
   })
-  // 去掉已完成巡检的设备
+  // 已完成巡检的设备，打上 finished 标记
+  devices.forEach(d => {
+    d.finished = !!inspects.find(i => {
+      return i.deviceId == d.id
+    })
+  })  
 
-  //attachUsers(items)
   res.send({
     date,
     devices
