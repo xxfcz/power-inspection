@@ -310,7 +310,7 @@ router.get('/user/:uid/todo', async function todo(req, res) {
   })
   if (taskDate == null) {
     res.send({
-      taskDate,
+      date: taskDate,
       devices: []
     })
     return
@@ -365,7 +365,7 @@ router.get('/user/:uid/todo', async function todo(req, res) {
     })  
   }
   res.send({
-    taskDate,
+    date: taskDate,
     devices
   })
 })
