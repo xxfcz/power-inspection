@@ -192,16 +192,16 @@
     {
       "id": 1,
       "workshopId": 2,
-      "name": "计划A",
-      "type": "monthly",
-      "month": "2018-07"
+      "title": "计划A",
+      "category": "monthly",
+      "month": "2018-08"
     },
     {
       "id": 2,
       "workshopId": 2,
-      "name": "计划B",
-      "type": "temporary",
-      "month": "2018-07"
+      "title": "计划B",
+      "category": "temporary",
+      "month": "2018-08"
     }
   ],
   "schedule_items": [
