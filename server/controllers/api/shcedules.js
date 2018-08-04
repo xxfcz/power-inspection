@@ -298,7 +298,7 @@ router.get('/:id', async function getScheduleById(req, res) {
 router.get('/user/:uid/todo', async function todo(req, res) {
   let uid = parseInt(req.params.uid)
   // 自今天起有任务的最近日期
-  let date = await ScheduleItem.min('date', {
+  let taskDate = await ScheduleItem.min('date', {
     where: {
       date: {
         [Op.gte]: moment().format('YYYY-MM-DD')
@@ -308,9 +308,9 @@ router.get('/user/:uid/todo', async function todo(req, res) {
       }
     }
   })
-  if (date == null) {
+  if (taskDate == null) {
     res.send({
-      date,
+      taskDate,
       devices: []
     })
     return
@@ -318,7 +318,7 @@ router.get('/user/:uid/todo', async function todo(req, res) {
   // 该日期的计划项
   let items = await ScheduleItem.findAll({
     where: {
-      date,
+      date: taskDate,
       userIds: {
         [Op.contains]: uid
       }
@@ -345,26 +345,27 @@ router.get('/user/:uid/todo', async function todo(req, res) {
     })
   })
 
-  // 今天已完成的巡检
-  let inspects = await Inspect.findAll({
-    where: {
-      time: {
-        [Op.gte]: moment().format('YYYY-MM-DD'),
-        [Op.lte]: moment()
-          .add(1, 'day')
-          .format('YYYY-MM-DD')
+  // 如果任务日期是今天，则找出今天完成的巡检记录，并标记对应任务为已完成
+  if(taskDate == moment().format('YYYY-MM-DD')){
+    let inspects = await Inspect.findAll({
+      where: {
+        time: {
+          [Op.gte]: moment().format('YYYY-MM-DD'),
+          [Op.lte]: moment()
+            .add(1, 'day')
+            .format('YYYY-MM-DD')
+        }
       }
-    }
-  })
-  // 已完成巡检的设备，打上 finished 标记
-  devices.forEach(d => {
-    d.finished = !!inspects.find(i => {
-      return i.deviceId == d.id
     })
-  })  
-
+    // 已完成巡检的设备(任务），打上 finished 标记
+    devices.forEach(d => {
+      d.finished = !!inspects.find(i => {
+        return i.deviceId == d.id
+      })
+    })  
+  }
   res.send({
-    date,
+    taskDate,
     devices
   })
 })
